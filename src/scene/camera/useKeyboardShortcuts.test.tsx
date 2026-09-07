@@ -50,6 +50,13 @@ describe('useKeyboardShortcuts', () => {
     expect(store().selectedId).toBeNull()
   })
 
+  it('Escape closes the about window', () => {
+    render(<Shortcuts />)
+    store().setAboutOpen(true)
+    press('Escape')
+    expect(store().aboutOpen).toBe(false)
+  })
+
   it('ignores keys typed into a text field', () => {
     const { getByLabelText } = render(<Shortcuts />)
     store().select('earth')

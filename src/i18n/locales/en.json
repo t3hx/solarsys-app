@@ -12,7 +12,6 @@
     "tacticalView": "Tactical view"
   },
   "drawer": {
-    "title": "Celestial Walker",
     "optionsTitle": "User Interface",
     "globalToggles": "Global Toggles",
     "toggleWireframe": "Toggle All Wireframe",
@@ -21,7 +20,6 @@
     "on": "ON",
     "off": "OFF",
     "celestialBodies": "Celestial Bodies",
-    "celestialOrbits": "Celestial Orbits",
     "wireframe": "Wireframe",
     "axesHelper": "Axes Helper",
     "gridHelper": "Grid Helper",
@@ -265,7 +263,7 @@
     "steps": {
       "welcome": {
         "title": "Welcome",
-        "description": "Celestial Walker is an interactive 3D solar system. Explore planets, moons and orbits in real time."
+        "description": "solarsys is an interactive 3D solar system. Explore planets, moons and orbits in real time."
       },
       "camera": {
         "title": "Camera Controls",
@@ -307,9 +305,5 @@
     "dataSources": "Scientific data",
     "dataSourcesThanks": "Thanks for the educational and scientific resources",
     "builtWith": "Built with"
-  },
-  "lang": {
-    "en": "EN",
-    "fr": "FR"
   }
 }

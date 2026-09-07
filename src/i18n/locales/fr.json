@@ -12,7 +12,6 @@
     "tacticalView": "Vue tactique"
   },
   "drawer": {
-    "title": "Celestial Walker",
     "optionsTitle": "Interface Utilisateur",
     "globalToggles": "Controles Globaux",
     "toggleWireframe": "Fil de fer global",
@@ -21,7 +20,6 @@
     "on": "ON",
     "off": "OFF",
     "celestialBodies": "Corps Celestes",
-    "celestialOrbits": "Orbites Celestes",
     "wireframe": "Fil de fer",
     "axesHelper": "Axes",
     "gridHelper": "Grille",
@@ -265,7 +263,7 @@
     "steps": {
       "welcome": {
         "title": "Bienvenue",
-        "description": "Celestial Walker est un systeme solaire 3D interactif. Explorez planetes, lunes et orbites en temps reel."
+        "description": "solarsys est un systeme solaire 3D interactif. Explorez planetes, lunes et orbites en temps reel."
       },
       "camera": {
         "title": "Controles Camera",
@@ -307,9 +305,5 @@
     "dataSources": "Donnees scientifiques",
     "dataSourcesThanks": "Merci pour les ressources educatives et scientifiques",
     "builtWith": "Construit avec"
-  },
-  "lang": {
-    "en": "EN",
-    "fr": "FR"
   }
 }
