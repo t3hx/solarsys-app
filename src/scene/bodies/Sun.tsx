@@ -5,11 +5,12 @@
  */
 import { useRef } from 'react'
 import type { Mesh } from 'three'
-import { sphereSegments, sunLightConfig } from '@/config/rendering'
+import { sunLightConfig } from '@/config/rendering'
 import type { Body } from '@/data/model'
 import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { starRadiusToUnits } from '@/physics/scaling'
-import { axialTiltRotation, bodyUserData, oblatenessScale } from '@/scene/bodies/bodyTransform'
+import { axialTiltRotation, bodyScale, bodyUserData } from '@/scene/bodies/bodyTransform'
+import { unitSphereGeometry } from '@/scene/bodies/geometry'
 import { useColorTexture } from '@/scene/bodies/useColorTexture'
 import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { useRegisterBody } from '@/scene/registry'
@@ -26,11 +27,11 @@ export function Sun({ body }: { body: Body }) {
       ref={meshRef}
       name={body.name}
       userData={bodyUserData(body)}
+      geometry={unitSphereGeometry()}
       rotation={axialTiltRotation(body)}
-      scale={oblatenessScale(body)}
+      scale={bodyScale(body, radius)}
       {...pointerHandlers}
     >
-      <sphereGeometry args={[radius, sphereSegments, sphereSegments]} />
       <meshBasicMaterial map={texture} />
       <pointLight
         color="white"

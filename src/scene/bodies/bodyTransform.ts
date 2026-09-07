@@ -12,9 +12,10 @@ export function axialTiltRotation(body: Body): EulerTuple {
   return [0, 0, body.axialTilt, 'ZYX']
 }
 
-export function oblatenessScale(body: Body): [number, number, number] {
+/** ~ Echelle du mesh : rayon en unites de scene, aplatissement polaire sur Y (sphere unitaire partagee). */
+export function bodyScale(body: Body, radiusUnits: number): [number, number, number] {
   const flattening = body.oblateness > 0 ? 1 - body.oblateness : 1
-  return [1, flattening, 1]
+  return [radiusUnits, radiusUnits * flattening, radiusUnits]
 }
 
 export function bodyUserData(body: Body) {

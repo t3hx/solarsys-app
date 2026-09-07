@@ -45,6 +45,15 @@ export const starfieldConfig = {
   color: colors.white,
 } as const
 
+/**
+ * Ordre des callbacks `useFrame` (priorites negatives : avant le rendu automatique).
+ * Simulation → suivi camera → mise a jour de CameraControls (drei : -1) → rendu.
+ */
+export const frameOrder = {
+  simulation: -20,
+  cameraFollow: -10,
+} as const
+
 /** Seuil de selection des lignes d'orbite : base + proportionnel a la distance camera */
 export const lineRaycastThreshold = { base: 2, perUnitOfDistance: 0.004 } as const
 

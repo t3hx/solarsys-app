@@ -26,11 +26,12 @@ export const atmosphereLayerDefaults = {
 } as const
 
 export const ringLayerDefaults = {
-  opacity: 0.9,
   thetaSegments: 128,
-  /** Anneaux sans texture (Uranus) */
-  fallbackColor: 0x99aacc,
-  fallbackOpacity: 0.3,
+  /** Anneaux textures (Saturne) */
+  textured: { opacity: 0.9, roughness: 0.8, metalness: 0.1 },
+  /** Anneaux sans texture (Uranus) : couleur unie attenuee */
+  fallback: { opacity: 0.3, roughness: 0.9, metalness: 0.0 },
+  fallbackColor: '#99AACC',
 } as const
 
 export const sunLightConfig = {

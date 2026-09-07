@@ -1,7 +1,6 @@
 import type * as Drei from '@react-three/drei'
 import ReactThreeTestRenderer from '@react-three/test-renderer'
-import type { Object3D } from 'three'
-import { Texture } from 'three'
+import type { Mesh, MeshStandardMaterial, Object3D } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { orbitalPosition } from '@/physics/kepler'
 import { angularSpeedFromPeriodHours } from '@/physics/rotation'
@@ -15,7 +14,7 @@ import { solarSystemFixture } from '@/test/fixtures/solarSystem'
 // * Les textures ne se chargent pas sous jsdom : useTexture renvoie une texture vide
 vi.mock('@react-three/drei', async (importOriginal) => {
   const actual = await importOriginal<typeof Drei>()
-  const useTexture = Object.assign(() => new Texture(), { preload: () => undefined })
+  const { fakeUseTexture: useTexture } = await import('@/test/mocks/useTexture')
   return { ...actual, useTexture }
 })
 
@@ -132,5 +131,62 @@ describe('SolarSystem', () => {
     await renderer.fireEvent(line, 'click')
     expect(useInteractionStore.getState().selectedId).toBe('mars')
     await renderer.unmount()
+  })
+
+  describe('visual features', () => {
+    const meshOf = async (name: string) => {
+      const renderer = await mount()
+      const node = renderer.scene.findByProps({ name })
+      return { renderer, mesh: node.instance as Mesh, node }
+    }
+
+    it('shares one unit sphere geometry between bodies and scales them by radius and oblateness', async () => {
+      const renderer = await mount()
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const mars = renderer.scene.findByProps({ name: 'Mars' }).instance as Mesh
+      expect(earth.geometry).toBe(mars.geometry)
+      const radius = earth.scale.x
+      expect(radius).toBeCloseTo(1.367, 3)
+      expect(earth.scale.y).toBeCloseTo(radius * (1 - 0.00335), 6)
+      expect(earth.scale.z).toBeCloseTo(radius, 6)
+      await renderer.unmount()
+    })
+
+    it('gives Earth night lights, a day/night shader and a cloud layer', async () => {
+      const { renderer, mesh, node } = await meshOf('Earth')
+      const material = mesh.material as MeshStandardMaterial
+      expect(material.emissiveMap).toBeTruthy()
+      expect(material.normalMap).toBeTruthy()
+      expect(material.onBeforeCompile).not.toBe(Object.getPrototypeOf(material).onBeforeCompile)
+      expect(node.findByProps({ name: 'EarthClouds' })).toBeDefined()
+      expect(() => node.findByProps({ name: 'EarthAtmosphere' })).toThrow()
+      await renderer.unmount()
+    })
+
+    it('gives Venus an atmosphere layer and nothing else', async () => {
+      const { renderer, node } = await meshOf('Venus')
+      expect(node.findByProps({ name: 'VenusAtmosphere' })).toBeDefined()
+      expect(() => node.findByProps({ name: 'VenusClouds' })).toThrow()
+      await renderer.unmount()
+    })
+
+    it('gives Saturn textured rings and Uranus flat-color rings', async () => {
+      const { renderer, node } = await meshOf('Saturn')
+      const saturnRings = node.findByProps({ name: 'SaturnRings' }).instance as Mesh
+      expect((saturnRings.material as MeshStandardMaterial).map).toBeTruthy()
+      const uranusRings = renderer.scene.findByProps({ name: 'UranusRings' }).instance as Mesh
+      expect((uranusRings.material as MeshStandardMaterial).map).toBeNull()
+      await renderer.unmount()
+    })
+
+    it('gives Pluto a bump map and Mercury nothing', async () => {
+      const { renderer, mesh } = await meshOf('Pluto')
+      expect((mesh.material as MeshStandardMaterial).bumpMap).toBeTruthy()
+      const mercury = renderer.scene.findByProps({ name: 'Mercury' })
+      expect((mercury.instance as Mesh).children).toHaveLength(0)
+      const mercuryMaterial = (mercury.instance as Mesh).material as MeshStandardMaterial
+      expect(mercuryMaterial.emissiveMap).toBeNull()
+      await renderer.unmount()
+    })
   })
 })

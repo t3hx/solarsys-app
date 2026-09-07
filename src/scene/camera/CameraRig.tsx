@@ -23,6 +23,7 @@ import {
   cameraConfig,
   cameraFocusConfig,
   controlsConfig,
+  frameOrder,
   lineRaycastThreshold,
   tacticalViewConfig,
 } from '@/config/scene'
@@ -165,7 +166,7 @@ export function CameraRig() {
     useCameraStore.getState().updateFromDistance(distance)
     state.raycaster.params.Line.threshold =
       lineRaycastThreshold.base + distance * lineRaycastThreshold.perUnitOfDistance
-  })
+  }, frameOrder.cameraFollow)
 
   return (
     <CameraControls

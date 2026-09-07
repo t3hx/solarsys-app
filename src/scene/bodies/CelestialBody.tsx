@@ -1,43 +1,83 @@
 /**
  * @module scene/bodies/CelestialBody
- * @description Planete ou satellite : sphere a l'echelle du projet, texture principale,
- * preset de materiau selon le type, aplatissement et inclinaison axiale.
- * Les couches (nuages, atmosphere, anneaux) et le shader jour/nuit arrivent en phase 5.
+ * @description Planete ou satellite, entierement guide par les donnees : les cartes et les
+ * couches s'activent selon les textures declarees (voir `bodyFeatures`).
+ *
+ * - sphere unitaire partagee, rayon en scale, aplatissement en scale Y, inclinaison axiale ;
+ * - materiau : surface, normale, relief, rugosite depuis la speculaire, emissif nocturne,
+ *   preset (jour/nuit > atmosphere > type), shader jour/nuit par `onBeforeCompile` ;
+ * - enfants : nuages, atmosphere, anneaux (heritent de l'echelle et de l'inclinaison).
  */
 import { useRef } from 'react'
 import type { Mesh } from 'three'
-import { materialDefaults, sphereSegments } from '@/config/rendering'
 import type { Body } from '@/data/model'
 import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { bodyRadiusToUnits } from '@/physics/scaling'
-import { axialTiltRotation, bodyUserData, oblatenessScale } from '@/scene/bodies/bodyTransform'
-import { useColorTexture } from '@/scene/bodies/useColorTexture'
+import { AtmosphereLayer } from '@/scene/bodies/AtmosphereLayer'
+import { bodyFeatures, materialPreset } from '@/scene/bodies/bodyFeatures'
+import { axialTiltRotation, bodyScale, bodyUserData } from '@/scene/bodies/bodyTransform'
+import { CloudLayer } from '@/scene/bodies/CloudLayer'
+import { injectDayNightShader } from '@/scene/bodies/dayNightShader'
+import { unitSphereGeometry } from '@/scene/bodies/geometry'
+import { RingLayer } from '@/scene/bodies/RingLayer'
+import { useBodyTextures } from '@/scene/bodies/useBodyTextures'
+import { useRoughnessMap } from '@/scene/bodies/useRoughnessMap'
 import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { useRegisterBody } from '@/scene/registry'
 
 export function CelestialBody({ body }: { body: Body }) {
   const meshRef = useRef<Mesh>(null)
-  const texture = useColorTexture(body.textures.main)
-  const radius = bodyRadiusToUnits(body.radiusKm)
-  const preset = body.kind === 'satellite' ? materialDefaults.satellite : materialDefaults.planet
+  const features = bodyFeatures(body)
+  const preset = materialPreset(body)
+  const textures = useBodyTextures(body)
+  const roughnessMap = useRoughnessMap(textures.specular)
+
   useRegisterBody(body.id, meshRef, angularSpeedFromPeriodHours(body.rotationPeriodHours))
   const pointerHandlers = useBodyPointerHandlers(body.id)
+
+  const emissiveIntensity = 'emissiveIntensity' in preset ? preset.emissiveIntensity : 1
+  const dayNightShader = features.dayNight ? { onBeforeCompile: injectDayNightShader } : {}
 
   return (
     <mesh
       ref={meshRef}
       name={body.name}
       userData={bodyUserData(body)}
+      geometry={unitSphereGeometry()}
       rotation={axialTiltRotation(body)}
-      scale={oblatenessScale(body)}
+      scale={bodyScale(body, bodyRadiusToUnits(body.radiusKm))}
       {...pointerHandlers}
     >
-      <sphereGeometry args={[radius, sphereSegments, sphereSegments]} />
       <meshStandardMaterial
-        map={texture}
+        map={textures.main ?? null}
+        normalMap={textures.normal ?? null}
+        bumpMap={textures.bump ?? null}
+        roughnessMap={roughnessMap ?? null}
+        emissiveMap={textures.night ?? null}
+        emissive={features.nightLights ? 'white' : 'black'}
+        emissiveIntensity={emissiveIntensity}
         roughness={preset.roughness}
         metalness={preset.metalness}
+        {...dayNightShader}
       />
+      {features.clouds && textures.clouds && (
+        <CloudLayer
+          name={`${body.name}Clouds`}
+          texture={textures.clouds}
+        />
+      )}
+      {features.atmosphere && textures.atmosphere && (
+        <AtmosphereLayer
+          name={`${body.name}Atmosphere`}
+          texture={textures.atmosphere}
+        />
+      )}
+      {features.rings && (
+        <RingLayer
+          body={body}
+          texture={textures.rings}
+        />
+      )}
     </mesh>
   )
 }
