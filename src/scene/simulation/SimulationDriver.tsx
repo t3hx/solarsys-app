@@ -7,6 +7,7 @@
  */
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
+import { frameOrder } from '@/config/scene'
 import type { PlanePosition } from '@/physics/kepler'
 import { orbitalPosition } from '@/physics/kepler'
 import { useRegistry } from '@/scene/registry'
@@ -31,7 +32,7 @@ export function SimulationDriver() {
     for (const entry of registry.bodies()) {
       if (entry.rotationSpeed !== 0) entry.mesh.rotation.y += entry.rotationSpeed * scaledDelta
     }
-  })
+  }, frameOrder.simulation)
 
   return null
 }

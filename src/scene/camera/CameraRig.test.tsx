@@ -1,6 +1,6 @@
 import type * as Drei from '@react-three/drei'
 import ReactThreeTestRenderer from '@react-three/test-renderer'
-import { Texture, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { cameraConfig, cameraFocusConfig, tacticalViewConfig } from '@/config/scene'
 import { CameraRig } from '@/scene/camera/CameraRig'
@@ -70,7 +70,7 @@ vi.mock('@react-three/drei', async (importOriginal) => {
     React.useImperativeHandle(ref, () => fake.controls)
     return null
   })
-  const useTexture = Object.assign(() => new Texture(), { preload: () => undefined })
+  const { fakeUseTexture: useTexture } = await import('@/test/mocks/useTexture')
   return { ...actual, CameraControls, useTexture }
 })
 
