@@ -8,6 +8,7 @@ import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { RegistryProvider, createRegistry } from '@/scene/registry'
 import { SimulationDriver } from '@/scene/simulation/SimulationDriver'
 import { SolarSystem } from '@/scene/SolarSystem'
+import { useInteractionStore } from '@/store/interaction'
 import { useSimulationStore } from '@/store/simulation'
 import { solarSystemFixture } from '@/test/fixtures/solarSystem'
 
@@ -32,6 +33,7 @@ function mount(registry = createRegistry()) {
 describe('SolarSystem', () => {
   beforeEach(() => {
     useSimulationStore.getState().reset()
+    useInteractionStore.getState().reset()
   })
 
   it('renders one mesh per body, named after the body', async () => {
@@ -109,6 +111,26 @@ describe('SolarSystem', () => {
     const initial = orbitalPosition(mars.orbit, 0)
     expect(mars.mover.position.x).toBeCloseTo(initial.x, 4)
     expect(registry.getBody('mars')!.mesh.rotation.y).toBe(0)
+    await renderer.unmount()
+  })
+
+  it('hovers and selects a body from pointer events', async () => {
+    const renderer = await mount()
+    const earth = renderer.scene.findByProps({ name: 'Earth' })
+    await renderer.fireEvent(earth, 'pointerOver')
+    expect(useInteractionStore.getState().hoveredId).toBe('earth')
+    await renderer.fireEvent(earth, 'pointerOut')
+    expect(useInteractionStore.getState().hoveredId).toBeNull()
+    await renderer.fireEvent(earth, 'click')
+    expect(useInteractionStore.getState().selectedId).toBe('earth')
+    await renderer.unmount()
+  })
+
+  it('selects a body from a click on its orbit line', async () => {
+    const renderer = await mount()
+    const line = renderer.scene.find((node) => node.instance.userData?.bodyId === 'mars')
+    await renderer.fireEvent(line, 'click')
+    expect(useInteractionStore.getState().selectedId).toBe('mars')
     await renderer.unmount()
   })
 })

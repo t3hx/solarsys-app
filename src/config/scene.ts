@@ -23,7 +23,8 @@ export const rendererConfig = {
 } as const
 
 export const controlsConfig = {
-  dampingFactor: 0.05,
+  /** Temps de lissage des controles utilisateur (camera-controls) */
+  smoothTime: 0.25,
   minDistance: 0.1,
   /** Couvre l'aphelie d'Eris (~24 500 u) avec marge */
   maxDistance: 35_000,
@@ -43,6 +44,9 @@ export const starfieldConfig = {
   maxDistance: 45_000,
   color: colors.white,
 } as const
+
+/** Seuil de selection des lignes d'orbite : base + proportionnel a la distance camera */
+export const lineRaycastThreshold = { base: 2, perUnitOfDistance: 0.004 } as const
 
 export const cameraFocusConfig = {
   focalLengthMultiplier: 1.5,

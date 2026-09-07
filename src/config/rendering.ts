@@ -49,8 +49,21 @@ export const specularProcessing = {
 
 export const sphereSegments = 64
 
+export const outlineConfig = {
+  hoverColor: '#FFFFFF',
+  selectedColor: '#00FF7F',
+  edgeStrength: 5,
+  bloomIntensity: 0.4,
+  /** Rayon du bloom (0.85 par defaut dans postprocessing) : plus serre, proche du reglage Vue */
+  bloomRadius: 0.4,
+  /** Anti-aliasing du composer (MSAA) : lisse les lignes d'orbite */
+  multisampling: 4,
+} as const
+
 export const orbitLineDefaults = {
   opacity: 0.2,
+  /** Opacite de la ligne du corps survole ou selectionne */
+  highlightOpacity: 0.8,
   /** Nombre de segments de l'ellipse */
   resolution: 512,
 } as const

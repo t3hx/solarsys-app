@@ -4,10 +4,12 @@
  * (voir docs/react-migration-plan.md). Le titre reste un repere minimal en attendant.
  */
 import { useSolarSystem } from '@/data/useSolarSystem'
+import { useKeyboardShortcuts } from '@/scene/camera/useKeyboardShortcuts'
 import { SolarSystemCanvas } from '@/scene/SolarSystemCanvas'
 
 export function App() {
   const data = useSolarSystem()
+  useKeyboardShortcuts()
 
   return (
     <>

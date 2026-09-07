@@ -10,7 +10,7 @@ Date : 2026-09-05, mis à jour le 2026-09-07 avec les décisions ci-dessous. Ce 
 | Nom du produit | **`solarsys`** remplace « Celestial Walker » partout : titre de page, préloader, drawer, cartouche, fenêtre À propos, textes du tutoriel, cookie (`solarsys_tutorial_seen`). |
 | Image Docker | **`ghcr.io/t3hx/solarsys-app`**, taguée `latest` sur `main` + sha. |
 | Production | L'app n'a jamais été déployée : la phase 9 inclut la création de l'application Dokploy, le domaine, les identifiants ghcr et le premier déploiement. |
-| Caméra | `CameraControls` de drei (D3) validé, prototype de suivi en phase 4. |
+| Caméra | `CameraControls` de drei (D3) validé. Résultat du prototype (phase 4, 2026-09-07) : CameraControls pour les entrées utilisateur et le suivi (`moveTo` par frame) ; les transitions scriptées (focus 1,5 s, tactique 2 s, reset) restent des tweens GSAP `power3.inOut` appliqués via `setLookAt(…, false)`, car l'événement `rest` de camera-controls arrive plusieurs secondes après la fin visuelle. |
 | Ombres | **Supprimées** (pas de `castShadow`, pas d'option). |
 | Linear | Projet **Solarsys** existant (id `a6dd0f2f-…`), vide : EPIC#1 et FEAT#1–#9 créés à partir de ce plan. |
 

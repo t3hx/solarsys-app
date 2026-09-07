@@ -4,11 +4,15 @@
  * via `<primitive>` (le JSX `<line>` entre en conflit avec l'element SVG du meme nom).
  * `userData.type = 'orbit-line'` sert au raycasting (phase 4), plus de detection par nom.
  */
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { BufferGeometry, Float32BufferAttribute, Line, LineBasicMaterial } from 'three'
 import { colors } from '@/config/colors'
-import { orbitLineDefaults } from '@/config/rendering'
+import { orbitLineDefaults, outlineConfig } from '@/config/rendering'
+import { outlineTarget } from '@/scene/effects/outlineTarget'
+import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { ellipsePoints } from '@/scene/orbits/orbitGeometry'
+import { useInteractionStore } from '@/store/interaction'
 
 export interface OrbitLineProps {
   bodyId: string
@@ -53,5 +57,35 @@ export function OrbitLine({
     [line],
   )
 
-  return <primitive object={line} />
+  // ~ Surbrillance quand le corps de cette orbite est survole ou selectionne
+  const highlight = useInteractionStore(
+    useShallow((state) => {
+      const target = outlineTarget(state)
+      return target?.id === bodyId ? target.kind : null
+    }),
+  )
+  const lineRef = useRef<Line>(null)
+  useEffect(() => {
+    const material = lineRef.current?.material as LineBasicMaterial | undefined
+    if (!material) return
+    if (highlight === null) {
+      material.color.set(colors.white)
+      material.opacity = orbitLineDefaults.opacity
+    } else {
+      material.color.set(
+        highlight === 'selected' ? outlineConfig.selectedColor : outlineConfig.hoverColor,
+      )
+      material.opacity = orbitLineDefaults.highlightOpacity
+    }
+  }, [highlight])
+
+  const pointerHandlers = useBodyPointerHandlers(bodyId)
+
+  return (
+    <primitive
+      ref={lineRef}
+      object={line}
+      {...pointerHandlers}
+    />
+  )
 }
