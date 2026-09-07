@@ -5,7 +5,15 @@
  * la simulation et les fenetres d'information consomment.
  */
 
+import type { TimeUnit } from '@/physics/units'
+
 export type BodyKind = 'star' | 'planet' | 'satellite'
+
+/** Valeur telle que declaree dans les donnees, pour l'affichage (ex : 11.86 years) */
+export interface DisplayDuration {
+  value: number
+  unit: TimeUnit
+}
 
 export interface BodyTextures {
   main: string
@@ -40,6 +48,7 @@ export interface Orbit {
   argOfPerihelion: number
   meanAnomalyAtEpoch: number
   periodDays: number
+  periodDisplay: DisplayDuration
 }
 
 export interface Body {
@@ -58,6 +67,7 @@ export interface Body {
   densityKgM3: number
   surfaceGravityG: number
   lengthOfDayHours?: number
+  lengthOfDayDisplay?: DisplayDuration
   escapeVelocityKmS?: number
   temperature?: SurfaceTemperature
   rings?: Rings

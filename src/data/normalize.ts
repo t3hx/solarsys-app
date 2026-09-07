@@ -56,6 +56,7 @@ function normalizeOrbit(raw: RawPlanet['orbitalProps'], bodyId: string): Orbit |
   // * Le Soleil a des elements orbitaux vides : pas d'orbite
   if (raw.semiMajorAxis.trim() === '') return undefined
   const periodUnit = parseTimeUnit(raw.orbitalPeriodUnit, 'days')
+  const periodValue = requireNumber(raw.orbitalPeriod, 'orbitalPeriod', bodyId)
   return {
     semiMajorAxisKm: requireNumber(raw.semiMajorAxis, 'semiMajorAxis', bodyId),
     eccentricity: toNumber(raw.orbitalEccentricity) ?? 0,
@@ -63,7 +64,8 @@ function normalizeOrbit(raw: RawPlanet['orbitalProps'], bodyId: string): Orbit |
     longAscendingNode: degToRad(toNumber(raw.longAscendingNode) ?? 0),
     argOfPerihelion: degToRad(toNumber(raw.argOfPerihelion) ?? 0),
     meanAnomalyAtEpoch: degToRad(toNumber(raw.meanAnomaly) ?? 0),
-    periodDays: toDays(requireNumber(raw.orbitalPeriod, 'orbitalPeriod', bodyId), periodUnit),
+    periodDays: toDays(periodValue, periodUnit),
+    periodDisplay: { value: periodValue, unit: periodUnit },
   }
 }
 
@@ -105,7 +107,10 @@ function normalizeBody(raw: RawPlanet, kind: BodyKind, parentId?: string): Body 
   }
 
   const lengthOfDay = toNumber(physical.lengthOfDay)
-  if (lengthOfDay !== undefined) body.lengthOfDayHours = toHours(lengthOfDay, dayUnit)
+  if (lengthOfDay !== undefined) {
+    body.lengthOfDayHours = toHours(lengthOfDay, dayUnit)
+    body.lengthOfDayDisplay = { value: lengthOfDay, unit: dayUnit }
+  }
   const escapeVelocity = toNumber(physical.escapeVelocity)
   if (escapeVelocity !== undefined) body.escapeVelocityKmS = escapeVelocity
   const temperature = normalizeTemperature(physical)

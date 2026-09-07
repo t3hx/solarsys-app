@@ -29,6 +29,13 @@ describe('normalizeSolarSystem', () => {
     expect(earth.temperature).toEqual({ minC: -89, meanC: 15, maxC: 58 })
   })
 
+  it('keeps the display value and unit of periods and day lengths', () => {
+    expect(byId.get('jupiter')!.orbit!.periodDisplay).toEqual({ value: 11.86, unit: 'years' })
+    expect(byId.get('mercury')!.orbit!.periodDisplay).toEqual({ value: 88, unit: 'days' })
+    expect(byId.get('mercury')!.lengthOfDayDisplay).toEqual({ value: 4222.6, unit: 'hours' })
+    expect(byId.get('eris')!.lengthOfDayDisplay).toEqual({ value: 15.8, unit: 'days' })
+  })
+
   it('normalizes rotation periods to signed hours', () => {
     expect(byId.get('venus')?.rotationPeriodHours).toBe(-5832)
     expect(byId.get('sun')?.rotationPeriodHours).toBeCloseTo(25.4 * 24)

@@ -2,7 +2,7 @@
  * @module scene/camera/useKeyboardShortcuts
  * @description Raccourcis clavier globaux, un seul endroit (audit B11) :
  * - Espace : quitte le focus (deselection) ou la vue tactique ;
- * - Echap : efface survol et selection.
+ * - Echap : efface survol et selection, ferme la fenetre « a propos ».
  * Ignores quand le focus clavier est dans un champ de saisie.
  */
 import { useEffect } from 'react'
@@ -33,6 +33,7 @@ export function handleShortcut(event: KeyboardEvent): void {
   if (event.key === 'Escape') {
     state.hover(null)
     if (state.selectedId !== null) state.select(null)
+    if (state.aboutOpen) state.setAboutOpen(false)
   }
 }
 
