@@ -1,0 +1,79 @@
+/*
+ * ~ Palettes du projet, reprises de la version Vue (assets/css/main.css).
+ * Les noms volontairement mal orthographies (greeen, purpl, pinkk, yelllow, lblue)
+ * evitent toute collision avec les couleurs par defaut de Tailwind.
+ * `pinkk` remplace l'ancien `pink` qui ecrasait la palette Tailwind (audit A11).
+ */
+@theme static {
+  --font-sans: 'Public Sans', system-ui, sans-serif;
+
+  --breakpoint-xs: 20rem;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+  --breakpoint-3xl: 120rem;
+
+  --color-greeen-100: #d7ffec;
+  --color-greeen-200: #b2ffd9;
+  --color-greeen-300: #77febd;
+  --color-greeen-400: #37f499;
+  --color-greeen-500: #0add78;
+  --color-greeen-600: #01b861;
+  --color-greeen-700: #05904e;
+  --color-greeen-800: #0a7141;
+  --color-greeen-900: #0b5c37;
+
+  --color-purpl-100: #ede9fe;
+  --color-purpl-200: #dcd5ff;
+  --color-purpl-300: #c2b4fe;
+  --color-purpl-400: #987afb;
+  --color-purpl-500: #875af8;
+  --color-purpl-600: #7738ef;
+  --color-purpl-700: #6826db;
+  --color-purpl-800: #581fb8;
+  --color-purpl-900: #4a1b97;
+
+  --color-pinkk-100: #fde6ff;
+  --color-pinkk-200: #fdccff;
+  --color-pinkk-300: #fea3ff;
+  --color-pinkk-400: #ff6dff;
+  --color-pinkk-500: #f94dff;
+  --color-pinkk-600: #e116e3;
+  --color-pinkk-700: #bd0ebc;
+  --color-pinkk-800: #9a0e97;
+  --color-pinkk-900: #7e1179;
+
+  --color-yelllow-100: #f6fdc4;
+  --color-yelllow-200: #f1fc79;
+  --color-yelllow-300: #f4fb49;
+  --color-yelllow-400: #f6f718;
+  --color-yelllow-500: #e7de0b;
+  --color-yelllow-600: #c7b007;
+  --color-yelllow-700: #9f8109;
+  --color-yelllow-800: #836510;
+  --color-yelllow-900: #705213;
+
+  --color-lblue-100: #ccfbff;
+  --color-lblue-200: #9ff4ff;
+  --color-lblue-300: #5eeaff;
+  --color-lblue-400: #04d1f9;
+  --color-lblue-500: #00b8e1;
+  --color-lblue-600: #0092bd;
+  --color-lblue-700: #067498;
+  --color-lblue-800: #0f5e7b;
+  --color-lblue-900: #114d68;
+
+  /* ~ Couleurs HUD de la scene 3D (configs/colors.config.ts de la version Vue) */
+  --color-hud: #00ff7f;
+  --color-hud-shadow: #00944a91;
+}
+
+:root {
+  --color-primary: var(--color-greeen-400);
+  --color-secondary: var(--color-purpl-400);
+  --color-tertiary: var(--color-pinkk-400);
+  --color-quaternary: var(--color-yelllow-400);
+  --color-quinary: var(--color-lblue-400);
+}

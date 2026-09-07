@@ -1,0 +1,3 @@
+# ~ Politique supply-chain : refuser toute version publiee depuis moins de 24 h
+# (meme valeur en local, en CI et dans l'image Docker pour un comportement identique)
+minimumReleaseAge: 1440
