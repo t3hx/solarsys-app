@@ -1,0 +1,315 @@
+{
+  "hud": {
+    "menu": "MENU",
+    "zoomLevel": "NIVEAU DE ZOOM",
+    "void": "VIDE",
+    "outOfRange": "HORS PORTEE",
+    "max": "MAX",
+    "exitFocus": "Appuyez sur ESPACE pour quitter",
+    "wantToKnowMore": "EN SAVOIR PLUS ?",
+    "timeSpeed": "VITESSE DU TEMPS",
+    "lang": "LANGUE",
+    "tacticalView": "Vue tactique"
+  },
+  "drawer": {
+    "title": "Celestial Walker",
+    "optionsTitle": "Interface Utilisateur",
+    "globalToggles": "Controles Globaux",
+    "toggleWireframe": "Fil de fer global",
+    "toggleAxes": "Axes globaux",
+    "toggleGrids": "Grilles globales",
+    "on": "ON",
+    "off": "OFF",
+    "celestialBodies": "Corps Celestes",
+    "celestialOrbits": "Orbites Celestes",
+    "wireframe": "Fil de fer",
+    "axesHelper": "Axes",
+    "gridHelper": "Grille",
+    "body": "Corps",
+    "orbit": "Orbite",
+    "close": "Fermer",
+    "options": "Options",
+    "about": "A propos",
+    "back": "Retour"
+  },
+  "info": {
+    "noSelection": "Aucun corps celeste selectionne.",
+    "noFacts": "Aucun fait disponible pour le moment.",
+    "tabs": {
+      "analysis": "Analyse",
+      "facts": "Le saviez-vous ?"
+    }
+  },
+  "bodies": {
+    "sun": {
+      "name": "(Le) Soleil",
+      "description": "Le Soleil est un moteur atomique démesuré qui tourne en roue libre depuis **4,6 milliards d'années** sans jamais penser à s'arrêter pour faire le plein — *il est lui-même le plein*. Chaque seconde, il convertit l'équivalent en masse de **600 millions de voitures** d'hydrogène en énergie pure ; et comme les volumes se multiplient au cube, on pourrait y entasser près d'**1,3 million de planètes** comme la Terre malgré un diamètre « seulement » 109 fois supérieur au nôtre. Sa couronne extérieure est **plus chaude que sa propre surface** — un mystère que la physique n'a toujours pas résolu, *ce qui rend les astrophysiciens collectivement furieux depuis des décennies*. Quand il tousse — une éjection de masse coronale — il propulse des nuages de particules grands comme plusieurs planètes directement vers nous.\n\n> Heureusement, nous avons un bouclier magnétique. Sans lui, nous aurions l'aspect général d'une tartine trop grillée.",
+      "type": "Etoile naine jaune",
+      "winds": "400-800 km/s",
+      "seasons": "1 (11 ans)",
+      "facts": [
+        "🌌 Le Soleil effectue une révolution autour de la Voie Lactée en environ **225 millions d'années** — une « année galactique ». Depuis sa naissance, il en a accompli **18**.",
+        "🚀 La sonde **Parker Solar Probe** est l'objet le plus rapide jamais construit par l'humanité : elle frôle **692 000 km/h** à l'approche du Soleil.",
+        "🔴 Dans environ **5 milliards d'années**, le Soleil deviendra une géante rouge si grande qu'elle englobera probablement l'orbite terrestre — avant de se condenser en naine blanche."
+      ]
+    },
+    "mercury": {
+      "name": "Mercure",
+      "description": "Mercure est la planète qui a voulu avoir une atmosphère, s'y est essayée, et s'est fait souffler dessus par le Soleil comme une bougie d'anniversaire — *elle en a donc bricolé une de remplacement avec les gaz qui s'échappent de son propre sol, ce qui est à peu près aussi efficace qu'un imperméable en papier*. Résultat : l'amplitude thermique entre le jour (**+430 °C**) et la nuit (**−170 °C**) est la plus grande du système solaire — tout ça sur la même planète, parfois à quelques kilomètres de distance seulement. Son noyau de fer est si colossal qu'il représente **57 % de son volume total**, faisant d'elle un raisin sec qui rétrécit encore — Mercure se plisse depuis des milliards d'années, comme une vieille pomme oubliée sur un rebord de fenêtre. Et malgré sa scandaleuse proximité avec le Soleil, c'est **Vénus** — la planète d'à côté — qui détient le titre de plus chaude.\n\n> Na !",
+      "type": "Tellurique",
+      "winds": "Aucun",
+      "seasons": "Aucune",
+      "facts": [
+        "🎨 Les cratères de Mercure sont nommés d'après des **artistes, musiciens et écrivains** : on y trouve Beethoven, Bach, Tolstoï, Cervantes, et même Tolkien.",
+        "🧊 Malgré sa proximité avec le Soleil, Mercure possède de la **glace d'eau** dans les cratères polaires, protégée par l'ombre permanente — jamais touchée par un seul rayon solaire.",
+        "🛸 La sonde **BepiColombo** (ESA + JAXA), lancée en 2018, est en route pour Mercure et entrera en orbite en **2026** — seulement la 3e mission vers cette planète de toute l'histoire."
+      ]
+    },
+    "venus": {
+      "name": "Venus",
+      "description": "Vénus est la preuve cosmique qu'une belle apparence peut masquer une situation catastrophique — vue de loin, c'est l'astre le plus brillant du ciel nocturne ; vue de près, c'est un **four à pizza réglé au maximum depuis 4 milliards d'années**, nappé de nuages d'acide sulfurique. La pression atmosphérique y équivaut à celle que l'on subirait à **900 mètres de profondeur** sous l'océan, ce qui a réduit la plupart des sondes soviétiques en crêpes métalliques en **quelques dizaines de minutes**, la plus résistante tenant héroïquement **127 minutes** avant de capituler. Vénus tourne dans le sens opposé à presque toutes les autres planètes, *avec la sérénité déconcertante de quelqu'un qui fait demi-tour sur l'autoroute*, si lentement qu'**un jour vénusien sidéral est plus long qu'une année vénusienne**.\n\n> Sur Vénus, le Soleil se lève à l'ouest, se couche à l'est, et le temps est une notion purement théorique.",
+      "type": "Tellurique",
+      "winds": "<= 360 km/h",
+      "seasons": "Aucune",
+      "facts": [
+        "🔭 En **1610**, Galilée observa les **phases de Vénus** au télescope — preuve directe que Vénus orbite autour du Soleil et non de la Terre, contribuant à faire basculer l'astronomie vers l'héliocentrisme.",
+        "🌋 Vénus possède plus de **85 000 volcans** identifiés — plus que toute autre planète du système solaire. Certains pourraient être encore actifs.",
+        "🗺️ La quasi-totalité de la surface vénusienne a été cartographiée par **radar** depuis la sonde Magellan (1990-1994), car les nuages permanents bloquent toute observation optique."
+      ]
+    },
+    "earth": {
+      "name": "(La) Terre",
+      "description": "La Terre est, à notre connaissance, **le seul endroit de l'univers observable** où un être vivant peut se lever le matin, manger une tartine beurrée et regarder tomber la pluie — ce qui, à l'échelle cosmique, est un exploit proprement miraculeux. L'eau liquide en surface, cette curiosité chimique ici parfaitement banale, est **absente de toutes les autres surfaces planétaires** du système solaire ; et sa croûte est en perpétuel mouvement depuis des centaines de millions d'années, les continents dérivant comme des radeaux sur un manteau de roche semi-fondue, *ce qui est rassurant ou terrifiant selon le moment de la journée*. Vue de l'espace, cette agitation frénétique disparaît entièrement : notre planète ressemble à une **petite bille bleue flottant dans le noir absolu**, souveraine et infiniment fragile.\n\n> Ce contraste devrait nous traverser l'esprit chaque fois qu'on est coincé dans les embouteillages.",
+      "type": "Tellurique",
+      "winds": "<= 400 km/h",
+      "seasons": "4",
+      "facts": [
+        "🌍 La Terre est la seule planète du système solaire dont le nom **n'est pas issu de la mythologie** gréco-romaine — son nom vient du vieux germanique, comme le mot « humus ».",
+        "🦕 Il y a **300 millions d'années**, tous les continents étaient réunis en un seul supercontinent appelé **Pangée** — ils se sont fragmentés depuis et dérivent encore à la vitesse de pousse de vos ongles.",
+        "🧲 Le champ magnétique terrestre s'**inverse** environ tous les 200 000 à 300 000 ans : le pôle Nord magnétique devient le pôle Sud et vice-versa. La dernière inversion remonte à 780 000 ans."
+      ]
+    },
+    "moon": {
+      "name": "Lune",
+      "description": "Notre Lune est née d'un accident industriel cosmique : il y a **4,5 milliards d'années**, un objet de la taille de Mars a percuté la proto-Terre de plein fouet, projetant des milliards de tonnes de roche en fusion qui se sont agglomérées en orbite — *c'est à peu près aussi élégant comme naissance que tomber d'un camion*. Depuis, elle nous rend des services considérables : elle **stabilise notre axe de rotation** comme un gyroscope de luxe, empêchant les saisons de devenir un cauchemar chaotique, et elle a progressivement ralenti nos journées depuis les **6 heures** qu'elles duraient à ses débuts. En échange, elle s'éloigne de nous à **3,8 cm par an** — exactement la vitesse de pousse de vos ongles — et dans quelques centaines de millions d'années, elle sera trop loin pour provoquer des éclipses totales de Soleil.\n\n> Ce spectacle, unique dans le système solaire, aura alors disparu pour toujours — et personne n'aura pensé à le sauvegarder.",
+      "type": "Satellite",
+      "winds": "Aucun",
+      "seasons": "Aucune",
+      "facts": [
+        "👨‍🚀 **12 humains** ont marché sur la Lune entre 1969 et 1972 — tous américains. Depuis **Apollo 17** en décembre 1972, personne n'y est retourné.",
+        "👣 Les empreintes de pas des astronautes Apollo sont **toujours intactes** sur la Lune — sans vent ni pluie pour les effacer, elles pourraient durer des millions d'années.",
+        "🇨🇳 En **2019**, la sonde chinoise **Chang'e 4** s'est posée sur la **face cachée** de la Lune — une première absolue : aucun engin n'y avait jamais atterri, car les communications y sont impossibles sans satellite relais."
+      ]
+    },
+    "mars": {
+      "name": "Mars",
+      "description": "Mars est une planète qui a **manifestement connu des jours meilleurs** : elle possédait autrefois rivières, lacs, atmosphère digne de ce nom et champ magnétique protecteur — puis le noyau a refroidi, le champ magnétique s'est évanoui, et le vent solaire a emporté l'atmosphère morceau par morceau, *comme un propriétaire négligent qui démonte son appartement pièce par pièce*. Il en reste des paysages spectaculaires : un volcan dont les flancs culminent à **22 km**, émergeant au-dessus de la quasi-totalité de l'atmosphère dense, et un canyon si long qu'il **traverserait l'Europe d'un bout à l'autre**. Le ciel affiche une belle couleur beurre de cacahuète oxydée, et des tempêtes de poussière peuvent recouvrir **la planète entière** pendant des mois.\n\n> Plusieurs robots humains s'y promènent en ce moment même, envoyant patiemment leurs photos comme des touristes consciencieux dans un parc national post-apocalyptique.",
+      "type": "Tellurique",
+      "winds": "<= 100 km/h",
+      "seasons": "4",
+      "facts": [
+        "🚁 **Ingenuity** est devenu en 2021 le **premier engin motorisé à voler sur une autre planète** — un hélicoptère de 1,8 kg initialement prévu pour 5 vols d'essai, qui en a finalement effectué **72** avant de se poser définitivement.",
+        "💥 **Phobos**, la plus grande lune de Mars, orbite si près de la planète qu'elle sera **déchirée par les forces de marée** dans environ 50 millions d'années — ses débris formeront alors un anneau autour de Mars.",
+        "⏱️ En raison de son orbite elliptique, Mars s'approche de la Terre tous les **26 mois** à des distances très variables — de 56 millions de km (opposition favorable) à 401 millions de km."
+      ]
+    },
+    "jupiter": {
+      "name": "Jupiter",
+      "description": "Jupiter est une **usine à gravité** si massive qu'elle a raté de peu sa carrière d'étoile — il lui aurait suffi d'être **80 fois plus lourde** pour allumer la fusion nucléaire et devenir un soleil de poche. En l'état, elle se contente d'être **2,5 fois plus massive que toutes les autres planètes réunies**, ce qui est déjà parfaitement déraisonnable. Sa Grande Tache Rouge est un anticyclone **de la taille de la Terre entière**, actif depuis au moins **350 ans**, avec des vents dépassant les **600 km/h** — l'équivalent d'un ouragan catégorie 5 qui refuserait obstinément de prendre sa retraite. Jupiter tourne si vite sur elle-même (**moins de 10 heures** par jour) que son équateur se bombe visiblement, lui donnant la silhouette d'une mandarine aplatie.\n\n> Elle possède au moins **95 lunes connues**, dont quatre découvertes par Galilée en 1610 — ce qui lui avait valu pas mal d'ennuis avec l'Église.",
+      "type": "Gazeuse",
+      "winds": "<= 620 km/h",
+      "seasons": "Minimes",
+      "facts": [
+        "🌊 **Europe**, une lune de Jupiter, cache sous sa croûte de glace un océan d'eau liquide contenant potentiellement **2 à 3 fois plus d'eau** que tous les océans terrestres réunis — candidat sérieux à la vie extraterrestre.",
+        "🌋 **Io**, une autre lune de Jupiter, est le corps le plus **volcaniquement actif** du système solaire — ses éruptions permanentes projettent de la matière à des centaines de kilomètres d'altitude.",
+        "🛡️ Par sa masse colossale, Jupiter agit comme un **bouclier gravitationnel** pour les planètes intérieures : elle dévie ou capte de nombreuses comètes et astéroïdes qui autrement pourraient frapper la Terre."
+      ]
+    },
+    "saturn": {
+      "name": "Saturne",
+      "description": "Saturne est **la grande coquette du système solaire** : elle arbore ses anneaux avec une telle élégance qu'elle est devenue l'icône de l'astronomie populaire — depuis que Galilée, en 1610, crut apercevoir une planète flanquée de **deux grosses oreilles** en pointant son télescope vers elle. Ces anneaux s'étendent sur **des centaines de milliers de kilomètres** de diamètre mais leur épaisseur dépasse parfois à peine celle d'un immeuble de dix étages, *comme une feuille de papier à l'échelle d'un stade de football*. Saturne est par ailleurs si peu dense qu'elle **flotterait sur l'eau** si l'on trouvait un océan suffisamment grand — et selon certains modèles théoriques, la pression en son cœur transformerait le carbone en **diamants** qui tomberaient ensuite vers le centre comme de la grêle, *une hypothèse si poétique que les scientifiques espèrent secrètement qu'elle soit vraie*.\n\n> Sa lune Titan possède des lacs et des rivières bien réels — mais remplis de méthane liquide. La pêche y est localement déconseillée.",
+      "type": "Gazeuse",
+      "winds": "",
+      "seasons": "",
+      "facts": [
+        "🛸 En **2005**, la sonde **Huygens** s'est posée sur **Titan** — le seul atterrissage jamais réalisé dans le système solaire externe, à 1,4 milliard de kilomètres du Soleil. Elle a transmis des images pendant 72 minutes.",
+        "💦 **Encelade**, une lune de 500 km à peine, projette des **geysers d'eau salée** dans l'espace depuis un océan sous-glaciaire — l'un des environnements les plus prometteurs pour la vie dans tout le système solaire.",
+        "⬡ Le **pôle nord de Saturne** est traversé par une tempête hexagonale permanente d'environ **30 000 km** de diamètre — soit 2,5 fois la largeur de la Terre. Elle tourne avec une précision d'horloge depuis au moins 1980."
+      ]
+    },
+    "uranus": {
+      "name": "Uranus",
+      "description": "Uranus est la planète qui a décidé de **se coucher sur le côté** à la suite d'une collision titanesque dans sa jeunesse — et de ne plus jamais se relever, se retrouvant inclinée à **presque 98°** sur son orbite, roulant autour du Soleil comme une bille lancée sur le flanc. Conséquence directe : chaque pôle passe **42 ans** baigné de lumière, puis **42 ans** dans l'obscurité totale, *ce qui donne à la notion de « saison » une ampleur existentielle assez décourageante*. Ses anneaux, découverts **par accident en 1977** quand ils ont occulté une étoile qu'on observait, sont si sombres qu'ils réfléchissent à peine 2 % de la lumière — des anneaux fantômes, discrets jusqu'à l'invisibilité. Ses lunes portent des noms tirés de **Shakespeare et Alexander Pope**, faisant d'elle le seul coin du système solaire avec une programmation littéraire cohérente.\n\n> Pourquoi Uranus émet-elle si peu de chaleur interne, contrairement aux autres géantes ? Les scientifiques haussent les épaules — *avec un sourire qui en dit long*.",
+      "type": "Geante de glaces",
+      "winds": "",
+      "seasons": "",
+      "facts": [
+        "🔭 Uranus fut la **première planète découverte au télescope**, par William Herschel le **13 mars 1781** — son existence était totalement inconnue de toute l'humanité jusqu'à ce soir-là.",
+        "👑 Herschel voulut la baptiser **Georgium Sidus** (« l'étoile de Georges ») en hommage au roi George III d'Angleterre. Le reste du monde refusa poliment — et le nom Uranus finit par s'imposer.",
+        "🛸 **Voyager 2** est le seul engin spatial à avoir frôlé Uranus, en **janvier 1986** — un survol de quelques heures après 9 ans de voyage. Aucune autre sonde n'est actuellement en route pour y retourner."
+      ]
+    },
+    "neptune": {
+      "name": "Neptune",
+      "description": "Neptune est la planète que l'on a **trouvée grâce aux mathématiques** avant même de l'avoir vue — un peu comme deviner qu'il y a quelqu'un dans la pièce d'à côté en remarquant que les meubles bougent sans raison apparente. Le Verrier calcula précisément où devait se trouver le coupable qui perturbait l'orbite d'Uranus, et quand les astronomes de Berlin pointèrent leur télescope à l'endroit indiqué, Neptune était là, **à moins d'un degré de la position prédite**. La planète, indifférente à ce triomphe de la raison humaine, continuait tranquillement de souffler ses vents à **2 100 km/h** — les plus violents du système solaire. Sa lune Triton tourne **à l'envers**, trahissant une capture gravitationnelle depuis la ceinture de Kuiper, et se rapproche lentement de Neptune jusqu'à sa destruction inéluctable dans **environ 3,6 milliards d'années**.\n\n> Un destin de lune tragique — mais après tout, qui d'entre nous peut se vanter d'avoir un avenir garanti à 3 milliards d'années ?",
+      "type": "Geante de glaces",
+      "winds": "",
+      "seasons": "",
+      "facts": [
+        "🌟 **Galilée** avait observé Neptune dès **1612** dans son propre télescope — mais il la prit pour une étoile fixe. S'il avait regardé deux nuits de plus, il aurait détecté son mouvement et tout l'histoire aurait changé.",
+        "🔄 Depuis sa découverte en **1846**, Neptune n'a accompli qu'**une seule révolution complète** autour du Soleil — en 2011. Elle repassera au même point en **2175**.",
+        "👁️ La **Grande Tache Sombre** — une tempête aussi large que la Terre observée par Voyager 2 en 1989 — avait **disparu** lorsque Hubble la chercha en 1994. Neptune recycle ses tempêtes géantes bien plus vite que Jupiter."
+      ]
+    },
+    "pluto": {
+      "name": "Pluton",
+      "description": "Pluton est **le grand incompris du système solaire** : pendant **76 ans** tout le monde l'a appelé planète, puis l'UAI a changé les règles en 2006 et l'a rétrogradé. C'est un astronome de **23 ans** armé d'un comparateur à clignement qui l'a trouvé en 1930, alors que son prédécesseur Percival Lowell l'avait photographié par accident **en 1915 sans le voir** — et était mort depuis 14 ans quand Tombaugh fit la découverte. Son nom fut proposé par une **écolière de 11 ans** d'Oxford qui en fit la suggestion à son grand-père au petit-déjeuner. Quant à Charon, sa lune géante, elle est si massive que le centre de masse du système est **suspendu dans le vide entre les deux corps** — Pluton et Charon dansent autour d'un point fantôme.\n\n> Sa surface en forme de cœur géant, découverte en 2015, restera probablement le fait le plus attendrissant de toute l'histoire de l'astronomie planétaire.",
+      "type": "Naine",
+      "winds": "",
+      "seasons": "",
+      "facts": [
+        "🐕 Walt Disney baptisa son personnage **Pluto** en **1930**, la même année que la découverte de la planète — inspiré ou coïncidence, les archives Disney ne tranchent pas formellement.",
+        "⚛️ L'élément chimique **plutonium** (n°94) fut nommé en l'honneur de Pluton en **1941**, suivant une tradition établie : uranium → Uranus, neptunium → Neptune.",
+        "📅 En **2178**, Pluton achèvera sa **première révolution complète** depuis sa découverte. Les personnes nées en 1930 auraient besoin de vivre 248 ans pour fêter ce premier « anniversaire plutonien »."
+      ]
+    },
+    "ceres": {
+      "name": "Ceres",
+      "description": "Cérès est **le caméléon catégoriel du système solaire** : planète en 1801, astéroïde en 1852, planète naine en 2006 — **trois classifications différentes** en deux siècles, un record absolu que rien ni personne ne pourra lui reprendre. Découverte le **1er janvier 1801** par un prêtre sicilien qui cherchait une étoile dans un catalogue et trouva autre chose à la place, elle fut ensuite perdue dans l'éblouissement du Soleil — et c'est le mathématicien de **24 ans** Carl Friedrich Gauss qui inventa une nouvelle méthode de calcul d'orbite pour la retrouver, méthode encore utilisée aujourd'hui. Elle renferme **environ un tiers de toute la masse de la ceinture d'astéroïdes** à elle seule, dans un objet de seulement 940 km de diamètre. Sous sa surface austère se cachent des saumures souterraines qui remontent périodiquement en surface, s'évaporent, et laissent des **dépôts de sel brillants** visibles depuis l'espace.\n\n> Cérès est la preuve qu'il n'est jamais trop tard pour changer de catégorie professionnelle.",
+      "type": "Naine",
+      "winds": "Aucun",
+      "seasons": "Aucune",
+      "facts": [
+        "⚗️ L'élément chimique **Cérium** (Ce, n°58) fut nommé en l'honneur de Cérès en **1803**, deux ans seulement après sa découverte — à l'époque où elle était encore considérée comme une planète.",
+        "🛸 La sonde **Dawn** est la première à avoir orbité **deux corps différents** du système solaire : elle visita d'abord l'astéroïde Vesta (2011–2012), puis Cérès (2015–2018), avant d'y terminer sa mission faute de carburant.",
+        "🌊 Cérès est estimée contenir plus d'**eau douce** que l'ensemble des réserves d'eau douce liquide de la Terre — sous forme de glace en subsurface et de saumures circulant dans son manteau."
+      ]
+    },
+    "haumea": {
+      "name": "Haumea",
+      "description": "Hauméa est **la planète naine qui a décidé de ne ressembler à rien** de connu : au lieu d'être ronde comme tous ses congénères, elle a la forme d'un ballon de rugby aplati — parce qu'elle tourne sur elle-même en **moins de 4 heures**, la rotation la plus rapide de tout grand objet du système solaire, et la force centrifuge l'a tout simplement déformée. Sa surface de **glace d'eau cristalline quasi pure** brille comme de la neige fraîche dans le froid absolu, et depuis 2017, on sait qu'elle possède même un **anneau** — la première planète naine à en avoir un. Sa découverte a par ailleurs déclenché un scandale : une équipe espagnole annonça la découverte en urgence après avoir, selon l'équipe américaine, consulté leurs journaux d'observation sans autorisation — l'UAI n'a **jamais désigné de découvreur officiel**.\n\n> Elle a aussi engendré une « famille » de dizaines d'objets partageant sa composition en glace — comme une déesse de la fertilité qui aurait semé ses enfants aux quatre coins de la ceinture de Kuiper.",
+      "type": "Naine",
+      "winds": "Aucun",
+      "seasons": "Aucune",
+      "facts": [
+        "🎅 L'équipe américaine la surnomma **« Santa »** en interne — parce qu'ils l'avaient découverte le **28 décembre 2004**, trois jours après Noël.",
+        "💥 La « **famille Haumea** » regroupe des dizaines de petits TNOs partageant exactement la même composition en glace d'eau — tous issus de la **même collision ancestrale** il y a des milliards d'années, dont Haumea est le plus grand fragment.",
+        "📅 Haumea se rapprochera de son **point le plus proche du Soleil** (périhélie) seulement en **2133** — elle est actuellement à plus de 50 UA, soit 50 fois la distance Terre-Soleil."
+      ]
+    },
+    "makemake": {
+      "name": "Makemake",
+      "description": "Makémaké est **la planète naine qui a gardé son surnom de Pâques** jusque dans son nom officiel : l'équipe qui l'a découverte en 2005 l'avait surnommée 'Easterbunny' parce qu'elle l'avait trouvée juste après Pâques — et quand vint le moment de lui donner un vrai nom, ils cherchèrent délibérément une mythologie liée à Pâques, et tombèrent sur Makemake, dieu créateur de l'**île de Pâques**. Sa surface couleur rouille est couverte de méthane glacé teinté par des **tholins** — des composés organiques complexes formés par l'action des rayonnements cosmiques sur les glaces. Il possède une lune sans nom officiel, découverte en 2015 par Hubble, si sombre qu'elle passait totalement inaperçue malgré la proximité d'un corps aussi brillant. Des indices de **cryovolcanisme** et peut-être même d'un océan souterrain y ont été détectés.\n\n> Pour l'instant, Makemake reste un point rougeâtre mystérieux observé depuis la Terre, attendant patiemment son explorateur.",
+      "type": "Naine",
+      "winds": "Aucun",
+      "seasons": "Aucune",
+      "facts": [
+        "🌑 La lune de Makemake, découverte par Hubble en 2015, a un **albédo d'environ 4 %** — elle est donc extrêmement sombre, formant un contraste saisissant avec Makemake lui-même qui réfléchit **81 %** de la lumière reçue.",
+        "📍 Makemake est le **plus grand objet de la ceinture de Kuiper classique** — une région d'orbites stables au-delà de Neptune, à distinguer du disque épars où évolue Éris, encore plus lointain et chaotique.",
+        "📅 Makemake est actuellement près de son **point le plus éloigné du Soleil** (~52,7 UA en 2025) et n'atteindra son **prochain périhélie** qu'en **2186** — dans plus de 160 ans."
+      ]
+    },
+    "eris": {
+      "name": "Eris",
+      "description": "Éris est **la planète naine qui a tout déclenché** : quand Mike Brown et son équipe l'ont trouvée en 2005, elle semblait plus grande que Pluton, la NASA l'annonça comme **10e planète**, et l'astronomie mondiale entra en crise existentielle — *forçant l'UAI à définir pour la première fois en 2006 ce qu'est exactement une planète, question laissée sans réponse rigoureuse depuis Copernic*. Paradoxalement, bien qu'elle soit **27% plus massive** que Pluton, elle lui est légèrement inférieure en taille — simplement plus dense, comme un gâteau plus compact. Sa surface réfléchit **96% de la lumière** qu'elle reçoit, en faisant l'un des objets les plus brillants du système solaire — une quasi-boule miroir perdue à **presque 100 fois la distance Terre-Soleil**.\n\n> Son découvreur l'avait surnommée 'Xena' avant de la baptiser du nom de la déesse de la Discorde — *trouvant que le nom décrivait parfaitement les troubles qu'elle avait causés*.",
+      "type": "Naine",
+      "winds": "Aucun",
+      "seasons": "Aucune",
+      "facts": [
+        "🌑 La lune d'Éris se nomme **Dysnomia** — déesse grecque de la **Déraison et de la Dissimulation**, fille d'Éris dans la mythologie. Un choix d'une cohérence thématique impeccable.",
+        "🕵️ Les images originales d'Éris datent du **21 octobre 2003** — mais le logiciel d'analyse les avait ignorées car Éris se déplaçait trop lentement. Elle ne fut identifiée qu'en **janvier 2005** lors d'une re-analyse manuelle.",
+        "📖 Mike Brown, son découvreur, est surnommé **« le tueur de Pluton »** (Pluto Killer) — il a lui-même écrit un livre portant ce titre, assumant pleinement la controverse scientifique et culturelle qu'il a déclenchée."
+      ]
+    }
+  },
+  "metrics": {
+    "rank": "Rang",
+    "type": "Type",
+    "radius": "Rayon",
+    "mass": "Masse",
+    "density": "Densite",
+    "gravity": "Gravite",
+    "distanceToSun": "Dist. au Soleil",
+    "orbitalPeriod": "Periode orbitale",
+    "dayLength": "Duree du jour",
+    "temperature": "Temperature",
+    "moons": "Lunes",
+    "winds": "Vents",
+    "rings": "Anneaux",
+    "seasons": "Saisons",
+    "rotation": "Rotation",
+    "min": "min",
+    "avg": "moy",
+    "max": "max",
+    "prograde": "Prograde",
+    "retrograde": "Retrograde",
+    "none": "Aucun",
+    "yes": "Oui",
+    "no": "Non",
+    "days": "jours",
+    "years": "ans",
+    "hours": "heures",
+    "ordinal": "#{{rank}}"
+  },
+  "preloader": {
+    "textures": "textures",
+    "loading": "CHARGEMENT DES TEXTURES",
+    "initializing": "PREPARATION DE LA SCENE",
+    "ready": "PRET"
+  },
+  "tutorial": {
+    "skip": "PASSER",
+    "previous": "PRECEDENT",
+    "next": "SUIVANT",
+    "finish": "EXPLORER",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue",
+        "description": "Celestial Walker est un systeme solaire 3D interactif. Explorez planetes, lunes et orbites en temps reel."
+      },
+      "camera": {
+        "title": "Controles Camera",
+        "description": "Clic gauche et glisser pour orbiter. Molette pour zoomer. Clic droit et glisser pour deplacer la vue."
+      },
+      "select": {
+        "title": "Selection des Corps",
+        "description": "Cliquez sur un corps celeste pour y centrer la camera. Appuyez sur ESPACE pour quitter le mode focus."
+      },
+      "menu": {
+        "title": "Menu",
+        "description": "Cliquez sur le coin superieur gauche pour ouvrir le menu. Activez le fil de fer, les axes et les grilles pour chaque corps."
+      },
+      "zoom": {
+        "title": "Indicateur de Zoom",
+        "description": "La barre superieure affiche votre niveau de zoom actuel. Utilisez-la pour evaluer votre distance au centre de la scene."
+      },
+      "time": {
+        "title": "Controle du Temps",
+        "description": "Utilisez le controle de vitesse en bas pour accelerer ou ralentir la simulation orbitale."
+      },
+      "lang": {
+        "title": "Langue",
+        "description": "Basculez entre le francais et l'anglais a tout moment. L'interface se met a jour instantanement."
+      },
+      "tactical": {
+        "title": "Vue Tactique",
+        "description": "Cliquez sur le triangle en bas a droite pour activer la vue tactique, offrant une perspective aerienne de toutes les orbites."
+      },
+      "ready": {
+        "title": "Pret a Explorer",
+        "description": "Tout est en place ! Plongez dans le systeme solaire et decouvrez ses merveilles."
+      }
+    }
+  },
+  "about": {
+    "title": "A propos",
+    "createdBy": "Cree par",
+    "dataSources": "Donnees scientifiques",
+    "dataSourcesThanks": "Merci pour les ressources educatives et scientifiques",
+    "builtWith": "Construit avec"
+  },
+  "lang": {
+    "en": "EN",
+    "fr": "FR"
+  }
+}

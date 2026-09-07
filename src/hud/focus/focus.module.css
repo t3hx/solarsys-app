@@ -1,0 +1,86 @@
+.container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.symbol {
+  position: absolute;
+  top: 2.5%;
+  right: 2.5%;
+  transform-origin: top right;
+}
+
+.topCenter {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform-origin: top center;
+  pointer-events: auto;
+}
+
+.bottomCenter {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform-origin: bottom center;
+}
+
+.infoButton {
+  background-color: transparent;
+  border: 1px solid var(--color-hud);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: var(--color-hud);
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.1s ease;
+  white-space: nowrap;
+}
+
+.infoButton:hover,
+.infoButton:focus-visible {
+  background-color: var(--color-hud-shadow);
+  box-shadow: 0 0 15px var(--color-hud);
+}
+
+.exitPrompt {
+  color: var(--color-hud);
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 0 10px var(--color-hud);
+  animation: blink 2s infinite ease-in-out;
+  white-space: nowrap;
+  letter-spacing: 0.1em;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exitPrompt,
+  .container {
+    animation: none;
+  }
+}

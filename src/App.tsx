@@ -1,9 +1,9 @@
 /**
- * ~ Racine de l'application : charge les donnees puis monte la scene 3D.
- * Le HUD, les fenetres et l'onboarding arrivent dans les phases suivantes
- * (voir docs/react-migration-plan.md). Le titre reste un repere minimal en attendant.
+ * ~ Racine de l'application : charge les donnees, monte la scene 3D et le HUD.
+ * Les fenetres d'information et l'onboarding arrivent en phase 7.
  */
 import { useSolarSystem } from '@/data/useSolarSystem'
+import { Hud } from '@/hud/Hud'
 import { useKeyboardShortcuts } from '@/scene/camera/useKeyboardShortcuts'
 import { SolarSystemCanvas } from '@/scene/SolarSystemCanvas'
 
@@ -13,12 +13,13 @@ export function App() {
 
   return (
     <>
-      {data.status === 'ready' && <SolarSystemCanvas system={data.system} />}
-      <header className="pointer-events-none fixed top-4 left-4 z-10">
-        <h1 className="text-hud font-sans text-sm font-semibold tracking-[0.4em] uppercase">
-          solarsys
-        </h1>
-      </header>
+      <h1 className="sr-only">solarsys</h1>
+      {data.status === 'ready' && (
+        <>
+          <SolarSystemCanvas system={data.system} />
+          <Hud system={data.system} />
+        </>
+      )}
       {data.status === 'error' && (
         <p
           role="alert"

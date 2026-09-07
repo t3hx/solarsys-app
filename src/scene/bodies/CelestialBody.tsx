@@ -22,8 +22,10 @@ import { unitSphereGeometry } from '@/scene/bodies/geometry'
 import { RingLayer } from '@/scene/bodies/RingLayer'
 import { useBodyTextures } from '@/scene/bodies/useBodyTextures'
 import { useRoughnessMap } from '@/scene/bodies/useRoughnessMap'
+import { BodyHelpers } from '@/scene/debug/BodyHelpers'
 import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { useRegisterBody } from '@/scene/registry'
+import { useDebugStore } from '@/store/debug'
 
 export function CelestialBody({ body }: { body: Body }) {
   const meshRef = useRef<Mesh>(null)
@@ -31,6 +33,7 @@ export function CelestialBody({ body }: { body: Body }) {
   const preset = materialPreset(body)
   const textures = useBodyTextures(body)
   const roughnessMap = useRoughnessMap(textures.specular)
+  const wireframe = useDebugStore((state) => state.wireframe[body.id] ?? false)
 
   useRegisterBody(body.id, meshRef, angularSpeedFromPeriodHours(body.rotationPeriodHours))
   const pointerHandlers = useBodyPointerHandlers(body.id)
@@ -58,26 +61,31 @@ export function CelestialBody({ body }: { body: Body }) {
         emissiveIntensity={emissiveIntensity}
         roughness={preset.roughness}
         metalness={preset.metalness}
+        wireframe={wireframe}
         {...dayNightShader}
       />
       {features.clouds && textures.clouds && (
         <CloudLayer
           name={`${body.name}Clouds`}
           texture={textures.clouds}
+          wireframe={wireframe}
         />
       )}
       {features.atmosphere && textures.atmosphere && (
         <AtmosphereLayer
           name={`${body.name}Atmosphere`}
           texture={textures.atmosphere}
+          wireframe={wireframe}
         />
       )}
       {features.rings && (
         <RingLayer
           body={body}
           texture={textures.rings}
+          wireframe={wireframe}
         />
       )}
+      <BodyHelpers bodyId={body.id} />
     </mesh>
   )
 }

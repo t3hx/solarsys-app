@@ -1,0 +1,133 @@
+.corner {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-hud);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.button {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ~ Pas d'anneau de focus navigateur apres un clic ; anneau HUD au clavier */
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-hud);
+  outline-offset: 2px;
+}
+
+/* ~ Coin NW : bouton MENU */
+.menuBackground {
+  fill: transparent;
+  transition: fill 0.2s ease;
+}
+
+.menuText {
+  fill: var(--color-hud);
+  stroke: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  text-anchor: middle;
+  user-select: none;
+  transition: fill 0.1s ease;
+}
+
+.menuButton:hover .menuBackground,
+.menuButton:focus-visible .menuBackground {
+  fill: var(--color-hud);
+}
+
+.menuButton:hover .menuText,
+.menuButton:focus-visible .menuText {
+  fill: black;
+}
+
+/* ~ Coin SW : nom de la cible */
+.targetText {
+  fill: var(--color-hud);
+  stroke: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  user-select: none;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ~ Coin SE : bouton vue tactique */
+.triangle {
+  fill: var(--color-hud);
+  stroke: var(--color-hud);
+  stroke-width: 0.5;
+  fill-opacity: 0.8;
+  stroke-opacity: 0.8;
+  transition: all 0.2s ease-out;
+}
+
+.tacticalButton[aria-pressed='true'] .triangle {
+  fill-opacity: 1;
+  stroke-opacity: 1;
+}
+
+.tacticalButton:hover .triangle,
+.tacticalButton:focus-visible .triangle {
+  fill-opacity: 0.95;
+  filter: drop-shadow(0 0 6px var(--color-hud));
+}
+
+.iconWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25px;
+  height: 25px;
+  pointer-events: none;
+  transform-origin: top left;
+}
+
+.iconContainer {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 18px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .targetText {
+    animation: none;
+  }
+}

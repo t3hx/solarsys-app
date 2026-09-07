@@ -1,0 +1,66 @@
+.hud {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  color: var(--color-hud);
+  font-family: system-ui, sans-serif;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-hud);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.corner {
+  position: absolute;
+  display: block;
+  overflow: visible;
+}
+
+.interactive {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.bottomControls {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform-origin: bottom center;
+  pointer-events: auto;
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.controlLabel {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 127, 0.5);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
