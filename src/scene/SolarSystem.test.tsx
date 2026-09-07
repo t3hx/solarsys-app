@@ -7,6 +7,7 @@ import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { RegistryProvider, createRegistry } from '@/scene/registry'
 import { SimulationDriver } from '@/scene/simulation/SimulationDriver'
 import { SolarSystem } from '@/scene/SolarSystem'
+import { useDebugStore } from '@/store/debug'
 import { useInteractionStore } from '@/store/interaction'
 import { useSimulationStore } from '@/store/simulation'
 import { solarSystemFixture } from '@/test/fixtures/solarSystem'
@@ -33,6 +34,7 @@ describe('SolarSystem', () => {
   beforeEach(() => {
     useSimulationStore.getState().reset()
     useInteractionStore.getState().reset()
+    useDebugStore.getState().reset()
   })
 
   it('renders one mesh per body, named after the body', async () => {
@@ -186,6 +188,53 @@ describe('SolarSystem', () => {
       expect((mercury.instance as Mesh).children).toHaveLength(0)
       const mercuryMaterial = (mercury.instance as Mesh).material as MeshStandardMaterial
       expect(mercuryMaterial.emissiveMap).toBeNull()
+      await renderer.unmount()
+    })
+  })
+
+  describe('debug helpers', () => {
+    const act = (fn: () => void) => ReactThreeTestRenderer.act(async () => fn())
+
+    it('shows no helper by default', async () => {
+      const renderer = await mount()
+      expect(renderer.scene.findAllByType('AxesHelper')).toHaveLength(0)
+      expect(renderer.scene.findAllByType('GridHelper')).toHaveLength(0)
+      await renderer.unmount()
+    })
+
+    it('applies wireframe to the body and its layers', async () => {
+      const renderer = await mount()
+      await act(() => useDebugStore.getState().toggleWireframe('earth'))
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const clouds = renderer.scene.findByProps({ name: 'EarthClouds' }).instance as Mesh
+      expect((earth.material as MeshStandardMaterial).wireframe).toBe(true)
+      expect((clouds.material as MeshStandardMaterial).wireframe).toBe(true)
+      const mars = renderer.scene.findByProps({ name: 'Mars' }).instance as Mesh
+      expect((mars.material as MeshStandardMaterial).wireframe).toBe(false)
+      await renderer.unmount()
+    })
+
+    it('adds axes and grid helpers to a body on demand, with depth test disabled', async () => {
+      const renderer = await mount()
+      await act(() => {
+        useDebugStore.getState().toggleBodyAxes('earth')
+        useDebugStore.getState().toggleBodyGrid('earth')
+      })
+      const earth = renderer.scene.findByProps({ name: 'Earth' })
+      expect(earth.findAllByType('AxesHelper')).toHaveLength(1)
+      const grid = earth.findByType('GridHelper').instance as Mesh
+      expect((grid.material as MeshStandardMaterial).depthTest).toBe(false)
+      await renderer.unmount()
+    })
+
+    it('adds orbit helpers inside the inclined orbit group, not the body', async () => {
+      const renderer = await mount()
+      await act(() => useDebugStore.getState().toggleOrbitGrid('mars'))
+      const orbit = renderer.scene.findByProps({ name: 'Mars Orbit' })
+      expect(orbit.findAllByType('GridHelper')).toHaveLength(1)
+      expect(renderer.scene.findByProps({ name: 'Mars' }).findAllByType('GridHelper')).toHaveLength(
+        0,
+      )
       await renderer.unmount()
     })
   })

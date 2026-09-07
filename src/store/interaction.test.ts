@@ -61,4 +61,30 @@ describe('interaction store', () => {
     store().toggleTactical()
     expect(store().isTactical).toBe(false)
   })
+
+  it('opens the info window only while a body is selected, and closes it on deselection', () => {
+    store().setInfoOpen(true)
+    expect(store().infoOpen).toBe(false)
+    store().select('earth')
+    store().setInfoOpen(true)
+    expect(store().infoOpen).toBe(true)
+    store().select(null)
+    expect(store().infoOpen).toBe(false)
+  })
+
+  it('the about window and the info window are mutually exclusive', () => {
+    store().select('earth')
+    store().setInfoOpen(true)
+    store().setAboutOpen(true)
+    expect(store().aboutOpen).toBe(true)
+    expect(store().infoOpen).toBe(false)
+    store().setInfoOpen(true)
+    expect(store().aboutOpen).toBe(false)
+  })
+
+  it('selecting a body closes the about window', () => {
+    store().setAboutOpen(true)
+    store().select('mars')
+    expect(store().aboutOpen).toBe(false)
+  })
 })

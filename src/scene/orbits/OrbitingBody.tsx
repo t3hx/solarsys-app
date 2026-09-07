@@ -21,6 +21,7 @@ import type { KeplerianOrbit } from '@/physics/kepler'
 import { convertOrbitalElements } from '@/physics/orbitalElements'
 import { bodyRadiusToUnits, effectiveOrbitRadius } from '@/physics/scaling'
 import { CelestialBody } from '@/scene/bodies/CelestialBody'
+import { OrbitHelpers } from '@/scene/debug/OrbitHelpers'
 import { OrbitLine } from '@/scene/orbits/OrbitLine'
 import { useRegisterOrbit } from '@/scene/registry'
 
@@ -101,6 +102,10 @@ export function OrbitingBody({
           semiMajorAxis={kepler.semiMajorAxis}
           eccentricity={kepler.eccentricity}
           argOfPerihelion={kepler.argOfPerihelion}
+        />
+        <OrbitHelpers
+          bodyId={body.id}
+          radius={kepler.semiMajorAxis}
         />
       </group>
     </group>

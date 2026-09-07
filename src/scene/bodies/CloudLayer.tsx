@@ -7,7 +7,15 @@ import type { Texture } from 'three'
 import { cloudLayerDefaults, layerScaleFactors } from '@/config/rendering'
 import { unitSphereGeometry } from '@/scene/bodies/geometry'
 
-export function CloudLayer({ name, texture }: { name: string; texture: Texture }) {
+export function CloudLayer({
+  name,
+  texture,
+  wireframe = false,
+}: {
+  name: string
+  texture: Texture
+  wireframe?: boolean
+}) {
   return (
     <mesh
       name={name}
@@ -17,6 +25,7 @@ export function CloudLayer({ name, texture }: { name: string; texture: Texture }
       <meshStandardMaterial
         alphaMap={texture}
         transparent
+        wireframe={wireframe}
         opacity={cloudLayerDefaults.opacity}
       />
     </mesh>

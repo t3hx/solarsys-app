@@ -6,7 +6,15 @@ import type { Texture } from 'three'
 import { atmosphereLayerDefaults, layerScaleFactors, materialDefaults } from '@/config/rendering'
 import { unitSphereGeometry } from '@/scene/bodies/geometry'
 
-export function AtmosphereLayer({ name, texture }: { name: string; texture: Texture }) {
+export function AtmosphereLayer({
+  name,
+  texture,
+  wireframe = false,
+}: {
+  name: string
+  texture: Texture
+  wireframe?: boolean
+}) {
   return (
     <mesh
       name={name}
@@ -16,6 +24,7 @@ export function AtmosphereLayer({ name, texture }: { name: string; texture: Text
       <meshStandardMaterial
         map={texture}
         transparent
+        wireframe={wireframe}
         opacity={atmosphereLayerDefaults.opacity}
         roughness={materialDefaults.atmosphere.roughness}
         metalness={materialDefaults.atmosphere.metalness}

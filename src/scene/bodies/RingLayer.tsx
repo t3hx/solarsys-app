@@ -11,7 +11,15 @@ import { ringLayerDefaults } from '@/config/rendering'
 import type { Body } from '@/data/model'
 import { createRingGeometry } from '@/scene/bodies/ringGeometry'
 
-export function RingLayer({ body, texture }: { body: Body; texture: Texture | undefined }) {
+export function RingLayer({
+  body,
+  texture,
+  wireframe = false,
+}: {
+  body: Body
+  texture: Texture | undefined
+  wireframe?: boolean
+}) {
   const rings = body.rings!
   const inner = rings.innerRadiusKm / body.radiusKm
   const outer = rings.outerRadiusKm / body.radiusKm
@@ -34,6 +42,7 @@ export function RingLayer({ body, texture }: { body: Body; texture: Texture | un
         color={texture ? 'white' : ringLayerDefaults.fallbackColor}
         side={DoubleSide}
         transparent
+        wireframe={wireframe}
         opacity={material.opacity}
         roughness={material.roughness}
         metalness={material.metalness}
