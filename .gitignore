@@ -1,0 +1,23 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+coverage
+playwright-report
+test-results
+
+# Logs
+*.log
+
+# Editors and OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+.cursor
+
+# Local env files (secrets go through Doppler)
+.env
+.env.*
+!.env.example
