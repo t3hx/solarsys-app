@@ -12,6 +12,7 @@ import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { bodyRadiusToUnits } from '@/physics/scaling'
 import { axialTiltRotation, bodyUserData, oblatenessScale } from '@/scene/bodies/bodyTransform'
 import { useColorTexture } from '@/scene/bodies/useColorTexture'
+import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { useRegisterBody } from '@/scene/registry'
 
 export function CelestialBody({ body }: { body: Body }) {
@@ -20,6 +21,7 @@ export function CelestialBody({ body }: { body: Body }) {
   const radius = bodyRadiusToUnits(body.radiusKm)
   const preset = body.kind === 'satellite' ? materialDefaults.satellite : materialDefaults.planet
   useRegisterBody(body.id, meshRef, angularSpeedFromPeriodHours(body.rotationPeriodHours))
+  const pointerHandlers = useBodyPointerHandlers(body.id)
 
   return (
     <mesh
@@ -28,6 +30,7 @@ export function CelestialBody({ body }: { body: Body }) {
       userData={bodyUserData(body)}
       rotation={axialTiltRotation(body)}
       scale={oblatenessScale(body)}
+      {...pointerHandlers}
     >
       <sphereGeometry args={[radius, sphereSegments, sphereSegments]} />
       <meshStandardMaterial

@@ -6,6 +6,8 @@
 import { ambientLightConfig, starfieldConfig } from '@/config/scene'
 import type { SolarSystem as SolarSystemModel } from '@/data/model'
 import { CameraRig } from '@/scene/camera/CameraRig'
+import { Effects } from '@/scene/effects/Effects'
+import { CursorFeedback } from '@/scene/interaction/CursorFeedback'
 import { SceneReadyMarker } from '@/scene/SceneReadyMarker'
 import { SimulationDriver } from '@/scene/simulation/SimulationDriver'
 import { SolarSystem } from '@/scene/SolarSystem'
@@ -22,6 +24,8 @@ export function SceneContents({ system }: { system: SolarSystemModel }) {
       <SolarSystem system={system} />
       <SimulationDriver />
       <CameraRig />
+      <Effects />
+      <CursorFeedback />
       <SceneReadyMarker />
     </>
   )

@@ -11,6 +11,7 @@ import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { starRadiusToUnits } from '@/physics/scaling'
 import { axialTiltRotation, bodyUserData, oblatenessScale } from '@/scene/bodies/bodyTransform'
 import { useColorTexture } from '@/scene/bodies/useColorTexture'
+import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { useRegisterBody } from '@/scene/registry'
 
 export function Sun({ body }: { body: Body }) {
@@ -18,6 +19,7 @@ export function Sun({ body }: { body: Body }) {
   const texture = useColorTexture(body.textures.main)
   const radius = starRadiusToUnits(body.radiusKm)
   useRegisterBody(body.id, meshRef, angularSpeedFromPeriodHours(body.rotationPeriodHours))
+  const pointerHandlers = useBodyPointerHandlers(body.id)
 
   return (
     <mesh
@@ -26,6 +28,7 @@ export function Sun({ body }: { body: Body }) {
       userData={bodyUserData(body)}
       rotation={axialTiltRotation(body)}
       scale={oblatenessScale(body)}
+      {...pointerHandlers}
     >
       <sphereGeometry args={[radius, sphereSegments, sphereSegments]} />
       <meshBasicMaterial map={texture} />

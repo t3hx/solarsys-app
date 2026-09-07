@@ -11,6 +11,7 @@ import { cameraConfig, rendererConfig } from '@/config/scene'
 import type { SolarSystem } from '@/data/model'
 import { createRegistry, RegistryProvider } from '@/scene/registry'
 import { SceneContents } from '@/scene/SceneContents'
+import { useInteractionStore } from '@/store/interaction'
 
 export function SolarSystemCanvas({ system }: { system: SolarSystem }) {
   const registry = useMemo(() => createRegistry(), [])
@@ -31,6 +32,7 @@ export function SolarSystemCanvas({ system }: { system: SolarSystem }) {
         position: [...cameraConfig.initialPosition],
       }}
       onCreated={({ gl }) => gl.setClearColor(rendererConfig.backgroundColor)}
+      onPointerMissed={() => useInteractionStore.getState().select(null)}
     >
       <RegistryProvider registry={registry}>
         <Suspense fallback={null}>
