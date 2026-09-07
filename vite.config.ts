@@ -14,6 +14,16 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
+    rollupOptions: {
+      output: {
+        // ~ Isole Three.js et R3F dans leurs propres chunks (cache navigateur stable)
+        manualChunks(id: string) {
+          if (id.includes('node_modules/three/')) return 'three'
+          if (id.includes('node_modules/@react-three/')) return 'r3f'
+          return undefined
+        },
+      },
+    },
   },
   test: {
     environment: 'jsdom',

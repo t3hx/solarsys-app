@@ -1,14 +1,30 @@
 /**
- * ~ Racine de l'application. Pour l'instant un simple placeholder :
- * la scene 3D, le HUD et l'onboarding arrivent dans les phases suivantes
- * (voir docs/react-migration-plan.md).
+ * ~ Racine de l'application : charge les donnees puis monte la scene 3D.
+ * Le HUD, les fenetres et l'onboarding arrivent dans les phases suivantes
+ * (voir docs/react-migration-plan.md). Le titre reste un repere minimal en attendant.
  */
+import { useSolarSystem } from '@/data/useSolarSystem'
+import { SolarSystemCanvas } from '@/scene/SolarSystemCanvas'
+
 export function App() {
+  const data = useSolarSystem()
+
   return (
-    <main className="flex h-full items-center justify-center">
-      <h1 className="text-hud font-sans text-sm font-semibold tracking-[0.4em] uppercase">
-        solarsys
-      </h1>
-    </main>
+    <>
+      {data.status === 'ready' && <SolarSystemCanvas system={data.system} />}
+      <header className="pointer-events-none fixed top-4 left-4 z-10">
+        <h1 className="text-hud font-sans text-sm font-semibold tracking-[0.4em] uppercase">
+          solarsys
+        </h1>
+      </header>
+      {data.status === 'error' && (
+        <p
+          role="alert"
+          className="fixed bottom-4 left-4 z-10 font-mono text-sm text-red-400"
+        >
+          Failed to load solar system data: {data.message}
+        </p>
+      )}
+    </>
   )
 }

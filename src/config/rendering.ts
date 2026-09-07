@@ -48,3 +48,9 @@ export const specularProcessing = {
 } as const
 
 export const sphereSegments = 64
+
+export const orbitLineDefaults = {
+  opacity: 0.2,
+  /** Nombre de segments de l'ellipse */
+  resolution: 512,
+} as const
