@@ -2,7 +2,7 @@ import type * as Drei from '@react-three/drei'
 import ReactThreeTestRenderer from '@react-three/test-renderer'
 import { Vector3 } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { cameraConfig, cameraFocusConfig, controlsConfig, tacticalViewConfig } from '@/config/scene'
+import { cameraConfig, cameraFocusConfig, tacticalViewConfig } from '@/config/scene'
 import { CameraRig } from '@/scene/camera/CameraRig'
 import { followMinDistance } from '@/scene/camera/cameraDirector'
 import { createRegistry, RegistryProvider } from '@/scene/registry'
@@ -136,6 +136,17 @@ describe('CameraRig', () => {
     await renderer.unmount()
   })
 
+  it('keeps the camera outside the Sun when nothing is followed', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    const sunMin = followMinDistance(registry.getBody('sun')!.mesh.scale.x)
+    expect(fake.controls.minDistance).toBeCloseTo(sunMin, 6)
+    await act(() => interaction().select('earth'))
+    await act(() => interaction().select(null))
+    expect(fake.controls.minDistance).toBeCloseTo(sunMin, 6)
+    await renderer.unmount()
+  })
+
   it('keeps the camera above the surface of the followed body', async () => {
     const registry = createRegistry()
     const renderer = await mount(registry)
@@ -144,7 +155,10 @@ describe('CameraRig', () => {
     expect(fake.controls.minDistance).toBeCloseTo(followMinDistance(earthRadius), 6)
     expect(followMinDistance(earthRadius)).toBeGreaterThan(earthRadius + cameraConfig.near)
     await act(() => interaction().select(null))
-    expect(fake.controls.minDistance).toBe(controlsConfig.minDistance)
+    expect(fake.controls.minDistance).toBeCloseTo(
+      followMinDistance(registry.getBody('sun')!.mesh.scale.x),
+      6,
+    )
     await renderer.unmount()
   })
 
@@ -221,14 +235,23 @@ describe('CameraRig', () => {
     await renderer.unmount()
   })
 
-  it('publishes the zoom level from the camera distance every frame', async () => {
-    const renderer = await mount()
-    fake.state.distance = 100
+  it('publishes the zoom level from the camera distance every frame, relative to the target', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
     await renderer.advanceFrames(1, 0.016)
-    expect(useCameraStore.getState().zoomLevel).toBe(10)
+    expect(useCameraStore.getState().zoomLevel).toBe(6)
     fake.state.distance = 30_000
     await renderer.advanceFrames(1, 0.016)
     expect(useCameraStore.getState().zoomMode).toBe('outOfRange')
+    fake.state.distance = 50_000
+    await renderer.advanceFrames(1, 0.016)
+    expect(useCameraStore.getState().zoomMode).toBe('void')
+    // * En suivi, le niveau 10 est la surface du corps suivi
+    await act(() => interaction().select('earth'))
+    const earthScale = registry.getBody('earth')!.mesh.scale.x
+    fake.state.distance = followMinDistance(earthScale)
+    await renderer.advanceFrames(1, 0.016)
+    expect(useCameraStore.getState()).toMatchObject({ zoomLevel: 10, zoomMode: 'max' })
     await renderer.unmount()
   })
 })

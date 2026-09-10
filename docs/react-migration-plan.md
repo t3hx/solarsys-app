@@ -295,6 +295,14 @@ Branche `perf/textures-and-rendering`.
 - DPR plafonné, bloom sélectif, mesure avant/après (temps jusqu'au premier rendu, VRAM via `renderer.info`, FPS sur un MacBook et un mobile).
 Critère : premier rendu < 3 s sur connexion fibre (vs préchargement complet aujourd'hui), 60 fps stable sur Retina 1440p.
 
+### Phase 8 bis — Ergonomie du HUD (2026-09-10, branche `feat/hud-speeds-tactical-zoom`)
+
+Retours utilisateur après la phase 8 :
+- **Vitesses en unités humaines.** Trois presets, « 1 s = 1 heure / 1 jour / 1 an », à la place des multiplicateurs x0.01–x10 (1 s = 1 jour restait implicite). Chaque type de scène applique son défaut à l'entrée : focus → 1 heure (Terre en 24 s, Haumea en 3,9 s), univers → 1 jour (Mercure en 88 s), tactique → 1 an (troisième loi de Kepler lisible : Jupiter 12 s, Neptune 2,7 min). L'utilisateur garde la main entre deux changements de scène (`store/sceneSpeed`).
+- **Bouton vue tactique.** Coin SE agrandi (50 → 130 × 124 unités, soit 97 × 93 px sur un MacBook 14") avec le libellé « TACTIQUE » droit au-dessus du côté horizontal du triangle : il se lit comme une commande, plus comme un ornement du cadre.
+- **Reflet solaire.** Sur la machine de l'utilisateur (Chrome et Zen, GPU réel), le reflet du Soleil sur l'océan était un point blanc dense, comme sur un miroir, alors que les captures headless montraient un halo doux : la carte de rugosité générée par canvas 2D (8192 × 4096, 134 Mo) ne s'appliquait pas chez lui. Remplacée par une injection GLSL qui lit la carte spéculaire NASA directement comme `roughnessMap`, inversée, avec un plancher de rugosité de 60 % pour l'eau (`specularRoughnessShader`, injections composées par `shaderInjections` avec une clé de cache de programme par combinaison). Plus de canvas ni de conversion au démarrage. L'API de debug `window.solarsys` est désormais aussi disponible en `pnpm dev`.
+- **Jauge de zoom relative à la cible.** Les seuils absolus hérités de Vue mesuraient la zone orbitale, d'où « MAX » dès l'arrivée en focus. Niveau 10 = distance minimale atteignable (surface du corps suivi, ou du Soleil en vue libre, où la caméra ne peut plus entrer), niveau 0 = entrée de la sphère d'étoiles, échelle logarithmique. OUT OF RANGE dans la coquille d'étoiles (30 000–45 000 u), VOID au-delà : la distance maximale de la caméra passe à 60 000 u pour voir la sphère d'étoiles depuis le vide.
+
 ### Phase 9 — Mise en production (1–2 j)
 Branche `ci/deploy-and-docs`.
 - Playwright : chargement, clic planète, focus, ouverture info, changement de langue, vue tactique.

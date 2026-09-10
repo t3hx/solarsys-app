@@ -45,9 +45,9 @@ export const sunLightConfig = {
   decay: 0,
 } as const
 
-export const specularProcessing = {
-  /** Rugosite minimale pour limiter la brillance de l'eau (0-255) */
-  minRoughness: 128,
+export const specularRoughness = {
+  /** Rugosite minimale de l'eau (0-1) : reflet solaire large et doux, jamais un point */
+  waterMinRoughness: 0.6,
 } as const
 
 export const sphereSegments = 64

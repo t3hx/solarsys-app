@@ -11,9 +11,11 @@
  * - vue tactique : sauvegarde de l'etat courant, montee au-dessus du systeme, restauration a la
  *   sortie et reprise du suivi s'il etait actif ; si la sortie vient d'une selection (clic sur
  *   un corps depuis la vue tactique), c'est le focus qui prend la main, pas la restauration ;
- * - a chaque frame : niveau de zoom depuis la distance, seuil de raycast des lignes d'orbite ;
- * - en suivi, la distance minimale est relevee au rayon du corps : la camera ne peut plus
- *   entrer dans la planete au zoom maximal.
+ * - a chaque frame : niveau de zoom depuis la distance (relatif a la distance minimale de la
+ *   cible), seuil de raycast des lignes d'orbite ;
+ * - distance minimale : surface du corps suivi, ou du Soleil quand rien n'est selectionne ;
+ *   relachee pendant les transitions (qui partent parfois de plus pres) et reappliquee a
+ *   leur fin.
  *
  * Le focus ne modifie plus la vitesse de simulation (audit B5).
  */
@@ -58,15 +60,20 @@ export function CameraRig() {
   const isTactical = useInteractionStore((state) => state.isTactical)
   const isFollowing = useInteractionStore((state) => state.isFollowing)
 
-  // ~ Distance minimale : rayon du corps suivi (avec marge), sinon la valeur de configuration
+  /** ~ Distance minimale de la cible courante : surface du corps selectionne, sinon du Soleil. */
+  const targetMinDistance = useCallback(() => {
+    const id = useInteractionStore.getState().selectedId ?? 'sun'
+    const entry = registry.getBody(id)
+    if (!entry) return controlsConfig.minDistance
+    return followMinDistance(Math.max(entry.mesh.scale.x, entry.mesh.scale.y, entry.mesh.scale.z))
+  }, [registry])
+
+  // ~ Hors transition, la camera ne peut pas entrer dans le corps suivi ni dans le Soleil
   useEffect(() => {
     const controls = controlsRef.current
-    if (!controls) return
-    const entry = isFollowing && selectedId ? registry.getBody(selectedId) : undefined
-    controls.minDistance = entry
-      ? followMinDistance(Math.max(entry.mesh.scale.x, entry.mesh.scale.y, entry.mesh.scale.z))
-      : controlsConfig.minDistance
-  }, [isFollowing, selectedId, registry])
+    if (!controls || tweenRef.current) return
+    controls.minDistance = targetMinDistance()
+  }, [isFollowing, selectedId, targetMinDistance])
 
   // ~ API de debug (captures et mesures) : placer la camera a une distance donnee de la cible
   useEffect(() => {
@@ -89,6 +96,8 @@ export function CameraRig() {
       const controls = controlsRef.current
       if (!controls) return
       tweenRef.current?.kill()
+      // * La transition peut partir de plus pres que la distance minimale de la cible
+      controls.minDistance = controlsConfig.minDistance
 
       const startPosition = controls.getPosition(new Vector3(), false)
       const startTarget = controls.getTarget(new Vector3(), false)
@@ -117,10 +126,11 @@ export function CameraRig() {
         onComplete: () => {
           tweenRef.current = null
           onComplete()
+          controls.minDistance = targetMinDistance()
         },
       })
     },
-    [],
+    [targetMinDistance],
   )
 
   useEffect(
@@ -207,7 +217,7 @@ export function CameraRig() {
     }
 
     const distance = controls.distance
-    useCameraStore.getState().updateFromDistance(distance)
+    useCameraStore.getState().updateFromDistance(distance, targetMinDistance())
     state.raycaster.params.Line.threshold =
       lineRaycastThreshold.base + distance * lineRaycastThreshold.perUnitOfDistance
   }, frameOrder.cameraFollow)

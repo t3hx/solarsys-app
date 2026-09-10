@@ -1,13 +1,29 @@
 /**
  * @module store/simulation
- * @description Etat de la simulation temporelle : multiplicateur de vitesse et pause.
- * Lu par `SimulationDriver` via `getState()` a chaque frame (jamais par un hook dans
- * la boucle de rendu). A x1, une seconde reelle vaut un jour simule.
+ * @description Etat de la simulation temporelle : vitesse (jours simules par seconde reelle)
+ * et pause. Lu par `SimulationDriver` via `getState()` a chaque frame (jamais par un hook
+ * dans la boucle de rendu). Trois presets en unites humaines : une heure, un jour ou une
+ * annee simulee par seconde ; `sceneSpeed` applique celui de chaque type de scene.
  */
 import { create } from 'zustand'
 
-export const timeScalePresets = [0.01, 0.1, 1, 10] as const
-export type TimeScalePreset = (typeof timeScalePresets)[number]
+export type TimeScaleId = 'hour' | 'day' | 'year'
+
+export interface TimeScalePreset {
+  id: TimeScaleId
+  /** Jours simules par seconde reelle */
+  daysPerSecond: number
+}
+
+export const timeScalePresets: readonly TimeScalePreset[] = [
+  { id: 'hour', daysPerSecond: 1 / 24 },
+  { id: 'day', daysPerSecond: 1 },
+  { id: 'year', daysPerSecond: 365.25 },
+]
+
+export function presetSpeed(id: TimeScaleId): number {
+  return timeScalePresets.find((preset) => preset.id === id)!.daysPerSecond
+}
 
 export interface SimulationState {
   speed: number
@@ -17,7 +33,7 @@ export interface SimulationState {
   reset: () => void
 }
 
-const initialState = { speed: 1, paused: false }
+const initialState = { speed: presetSpeed('day'), paused: false }
 
 export const useSimulationStore = create<SimulationState>()((set) => ({
   ...initialState,

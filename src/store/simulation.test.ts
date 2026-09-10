@@ -6,13 +6,14 @@ describe('simulation store', () => {
     useSimulationStore.getState().reset()
   })
 
-  it('starts at x1, not paused', () => {
+  it('starts at one simulated day per second, not paused', () => {
     expect(useSimulationStore.getState().speed).toBe(1)
     expect(useSimulationStore.getState().paused).toBe(false)
   })
 
-  it('exposes the four presets in ascending order', () => {
-    expect(timeScalePresets).toEqual([0.01, 0.1, 1, 10])
+  it('exposes three presets in human units: one hour, one day, one year per second', () => {
+    expect(timeScalePresets.map((preset) => preset.id)).toEqual(['hour', 'day', 'year'])
+    expect(timeScalePresets.map((preset) => preset.daysPerSecond)).toEqual([1 / 24, 1, 365.25])
   })
 
   it('accepts a strictly positive speed', () => {

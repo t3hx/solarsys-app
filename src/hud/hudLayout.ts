@@ -34,9 +34,17 @@ export const cornerSizes = {
   nw: { width: 80, height: 290 },
   ne: { width: 40, height: 40 },
   sw: { width: 280, height: 40 },
-  se: { width: 50, height: 50 },
+  /** Triangle de 70 unites, decale de `seTriangleOffset`, sous une zone de libelle de `seLabelHeight` */
+  se: { width: 130, height: 124 },
   zoom: { width: 292, height: 42 },
 } as const
+
+/** Hauteur de la zone de libelle « TACTIQUE » au-dessus du triangle du coin SE */
+export const seLabelHeight = 24
+/** Decalage horizontal du triangle dans le coin SE, pour que le libelle tienne dans la boite */
+export const seTriangleOffset = 30
+/** Cote du triangle rectangle du coin SE ; le libelle occupe exactement cette longueur */
+export const seTriangleSize = 70
 
 const REFERENCE_HEIGHT = 1080
 const REFERENCE_WIDTH = 1920
@@ -95,7 +103,7 @@ export function hudLayout(width: number, height: number, scale: number): HudLayo
   const lines: Line[] = [
     [nw.x + nw.width, margin, zoom.x, margin],
     [zoom.x + zoom.width, margin, ne.x, margin],
-    [ne.x + ne.width, ne.y + ne.height, se.x + se.width, se.y],
+    [ne.x + ne.width, ne.y + ne.height, se.x + se.width, se.y + seLabelHeight * scale],
     [sw.x + sw.width, sw.y + sw.height, se.x, se.y + se.height],
     [nw.x, nw.y + nw.height, sw.x, sw.y],
   ]

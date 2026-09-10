@@ -1,7 +1,8 @@
 /**
  * @module debug/exposeDebugApi
- * @description API de pilotage exposee sur `window.solarsys`, uniquement quand le build est
- * fait avec `VITE_EXPOSE_DEBUG_API=1` (tests end-to-end, captures). Absente en production.
+ * @description API de pilotage exposee sur `window.solarsys` : en developpement (`pnpm dev`)
+ * et dans les builds faits avec `VITE_EXPOSE_DEBUG_API=1` (tests end-to-end, captures).
+ * Absente des builds de production.
  */
 import { gsap } from 'gsap'
 import type { Scene } from 'three'
@@ -29,7 +30,7 @@ declare global {
 }
 
 export function isDebugApiEnabled(): boolean {
-  return import.meta.env.VITE_EXPOSE_DEBUG_API === '1'
+  return import.meta.env.DEV || import.meta.env.VITE_EXPOSE_DEBUG_API === '1'
 }
 
 export function exposeDebugApi(): void {

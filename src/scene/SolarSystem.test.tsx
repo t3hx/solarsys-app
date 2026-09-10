@@ -199,6 +199,18 @@ describe('SolarSystem', () => {
       await renderer.unmount()
     })
 
+    it('uses the specular map itself as roughness map, read inverted by the shader', async () => {
+      const renderer = await mount()
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const material = earth.material as MeshStandardMaterial
+      expect(material.roughnessMap?.userData.url).toBe('/textures/8k_earth_specular_map.png')
+      expect(material.customProgramCacheKey()).toContain('specularRoughness')
+      expect(material.customProgramCacheKey()).toContain('dayNight')
+      const mercury = renderer.scene.findByProps({ name: 'Mercury' }).instance as Mesh
+      expect((mercury.material as MeshStandardMaterial).roughnessMap).toBeNull()
+      await renderer.unmount()
+    })
+
     it('gives Venus an atmosphere layer and nothing else', async () => {
       const { renderer, node } = await meshOf('Venus')
       expect(node.findByProps({ name: 'VenusAtmosphere' })).toBeDefined()

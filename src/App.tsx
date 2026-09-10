@@ -2,6 +2,7 @@
  * ~ Racine de l'application : charge les donnees, monte la scene 3D sous le prechargeur,
  * puis enchaine tutoriel (premiere visite) et scene avec HUD et fenetres.
  */
+import { useEffect } from 'react'
 import { useSolarSystem } from '@/data/useSolarSystem'
 import { Hud } from '@/hud/Hud'
 import { Preloader } from '@/onboarding/Preloader'
@@ -10,6 +11,7 @@ import { hasSeenTutorial } from '@/onboarding/useTutorial'
 import { useKeyboardShortcuts } from '@/scene/camera/useKeyboardShortcuts'
 import { SolarSystemCanvas } from '@/scene/SolarSystemCanvas'
 import { useAppStore } from '@/store/app'
+import { bindSceneSpeedDefaults } from '@/store/sceneSpeed'
 import { AboutWindow } from '@/windows/AboutWindow/AboutWindow'
 import { InfoWindow } from '@/windows/InfoWindow/InfoWindow'
 
@@ -17,6 +19,7 @@ export function App() {
   const data = useSolarSystem()
   const phase = useAppStore((state) => state.phase)
   useKeyboardShortcuts()
+  useEffect(() => bindSceneSpeedDefaults(), [])
 
   return (
     <>

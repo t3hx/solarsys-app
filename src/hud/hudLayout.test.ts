@@ -29,7 +29,8 @@ describe('hudLayout', () => {
     expect(layout.nw).toEqual({ x: 10, y: 10, width: 80, height: 290 })
     expect(layout.ne).toEqual({ x: 1870, y: 10, width: 40, height: 40 })
     expect(layout.sw).toEqual({ x: 10, y: 1030, width: 280, height: 40 })
-    expect(layout.se).toEqual({ x: 1860, y: 1020, width: 50, height: 50 })
+    // * Coin SE agrandi (100 unites) avec une zone de libelle de 24 unites au-dessus du triangle
+    expect(layout.se).toEqual({ x: 1780, y: 946, width: 130, height: 124 })
   })
 
   it('places the zoom indicator one and a half widths left of the NE corner', () => {
@@ -43,8 +44,9 @@ describe('hudLayout', () => {
     const [topLeft, topRight, right, bottom, left] = layout.lines
     expect(topLeft).toEqual([90, 10, layout.zoom.x, 10])
     expect(topRight).toEqual([layout.zoom.x + 292, 10, 1870, 10])
-    expect(right).toEqual([1910, 50, 1910, 1020])
-    expect(bottom).toEqual([290, 1070, 1860, 1070])
+    // * La ligne droite s'arrete au-dessus du triangle, pas du libelle
+    expect(right).toEqual([1910, 50, 1910, 970])
+    expect(bottom).toEqual([290, 1070, 1780, 1070])
     expect(left).toEqual([10, 300, 10, 1030])
   })
 
@@ -52,7 +54,7 @@ describe('hudLayout', () => {
     const small = hudLayout(1280, 720, 0.5)
     expect(small.margin).toBe(5)
     expect(small.nw).toEqual({ x: 5, y: 5, width: 40, height: 145 })
-    expect(small.se.x).toBe(1280 - 5 - 25)
+    expect(small.se.x).toBe(1280 - 5 - 65)
   })
 
   it('places the drawer against the menu corner', () => {

@@ -4,8 +4,9 @@
  * couches s'activent selon les textures declarees (voir `bodyFeatures`).
  *
  * - sphere unitaire partagee, rayon en scale, aplatissement en scale Y, inclinaison axiale ;
- * - materiau : surface, normale, relief, rugosite depuis la speculaire, emissif nocturne,
- *   preset (jour/nuit > atmosphere > type), shader jour/nuit par `onBeforeCompile` ;
+ * - materiau : surface, normale, relief, carte speculaire lue inversee comme rugosite,
+ *   emissif nocturne, preset (jour/nuit > atmosphere > type), injections GLSL composees
+ *   (`shaderInjections`) ;
  * - enfants : nuages, atmosphere, anneaux (heritent de l'echelle et de l'inclinaison).
  */
 import { useRef } from 'react'
@@ -17,11 +18,14 @@ import { AtmosphereLayer } from '@/scene/bodies/AtmosphereLayer'
 import { bodyFeatures, materialPreset } from '@/scene/bodies/bodyFeatures'
 import { axialTiltRotation, bodyScale, bodyUserData } from '@/scene/bodies/bodyTransform'
 import { CloudLayer } from '@/scene/bodies/CloudLayer'
+import { specularRoughness } from '@/config/rendering'
 import { injectDayNightShader } from '@/scene/bodies/dayNightShader'
 import { unitSphereGeometry } from '@/scene/bodies/geometry'
 import { RingLayer } from '@/scene/bodies/RingLayer'
 import { useBodyTextures } from '@/scene/bodies/useBodyTextures'
-import { useRoughnessMap } from '@/scene/bodies/useRoughnessMap'
+import { composeShaderInjections } from '@/scene/bodies/shaderInjections'
+import type { ShaderInjection } from '@/scene/bodies/shaderInjections'
+import { injectSpecularRoughness } from '@/scene/bodies/specularRoughnessShader'
 import { BodyHelpers } from '@/scene/debug/BodyHelpers'
 import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { useRegisterBody } from '@/scene/registry'
@@ -32,14 +36,21 @@ export function CelestialBody({ body }: { body: Body }) {
   const features = bodyFeatures(body)
   const preset = materialPreset(body)
   const textures = useBodyTextures(body)
-  const roughnessMap = useRoughnessMap(textures.specular)
   const wireframe = useDebugStore((state) => state.wireframe[body.id] ?? false)
 
   useRegisterBody(body.id, meshRef, angularSpeedFromPeriodHours(body.rotationPeriodHours))
   const pointerHandlers = useBodyPointerHandlers(body.id)
 
   const emissiveIntensity = 'emissiveIntensity' in preset ? preset.emissiveIntensity : 1
-  const dayNightShader = features.dayNight ? { onBeforeCompile: injectDayNightShader } : {}
+  const injections: ShaderInjection<Parameters<typeof injectDayNightShader>[0]>[] = []
+  if (features.dayNight) injections.push({ name: 'dayNight', apply: injectDayNightShader })
+  if (features.specular) {
+    injections.push({
+      name: 'specularRoughness',
+      apply: (shader) => injectSpecularRoughness(shader, specularRoughness.waterMinRoughness),
+    })
+  }
+  const shaderProps = composeShaderInjections(injections)
 
   return (
     <mesh
@@ -55,14 +66,14 @@ export function CelestialBody({ body }: { body: Body }) {
         map={textures.main ?? null}
         normalMap={textures.normal ?? null}
         bumpMap={textures.bump ?? null}
-        roughnessMap={roughnessMap ?? null}
+        roughnessMap={textures.specular ?? null}
         emissiveMap={textures.night ?? null}
         emissive={features.nightLights ? 'white' : 'black'}
         emissiveIntensity={emissiveIntensity}
         roughness={preset.roughness}
         metalness={preset.metalness}
         wireframe={wireframe}
-        {...dayNightShader}
+        {...shaderProps}
       />
       {features.clouds && textures.clouds && (
         <CloudLayer

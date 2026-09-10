@@ -1,11 +1,14 @@
 /**
  * @module hud/controls/TimeScaleControl
- * @description Presets de vitesse de simulation (x0.01, x0.1, x1, x10).
+ * @description Presets de vitesse de simulation en unites humaines : une heure, un jour ou
+ * une annee simulee par seconde reelle.
  */
+import { useTranslation } from 'react-i18next'
 import styles from '@/hud/controls/controls.module.css'
 import { timeScalePresets, useSimulationStore } from '@/store/simulation'
 
 export function TimeScaleControl() {
+  const { t } = useTranslation()
   const speed = useSimulationStore((state) => state.speed)
   const setSpeed = useSimulationStore((state) => state.setSpeed)
   return (
@@ -15,13 +18,13 @@ export function TimeScaleControl() {
     >
       {timeScalePresets.map((preset) => (
         <button
-          key={preset}
+          key={preset.id}
           type="button"
           className={styles.button}
-          aria-pressed={speed === preset}
-          onClick={() => setSpeed(preset)}
+          aria-pressed={speed === preset.daysPerSecond}
+          onClick={() => setSpeed(preset.daysPerSecond)}
         >
-          x{preset}
+          {t(`hud.timeScale.${preset.id}`)}
         </button>
       ))}
     </div>

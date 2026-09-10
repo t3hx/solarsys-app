@@ -1,41 +1,47 @@
 /**
  * @module hud/zoom/zoomState
  * @description Niveau de zoom discret et mode d'affichage de l'indicateur, derives de la
- * distance camera-cible. Pure, sans dependance a Three ni React.
+ * distance camera-cible et de la distance minimale atteignable. Pure, sans Three ni React.
+ *
+ * - niveau 10 a la distance minimale (surface du corps suivi ou du Soleil), 0 a l'entree de
+ *   la sphere d'etoiles, echelle logarithmique ;
+ * - MAX a la butee ; OUT OF RANGE dans la coquille d'etoiles (clin d'oeil : on a atteint la
+ *   limite du monde) ; VOID une fois sorti de la sphere, quand on la voit depuis le vide.
  */
-import { zoomThresholds, zoomVoidMargin } from '@/config/zoom'
-import { controlsConfig } from '@/config/scene'
+import { starfieldConfig } from '@/config/scene'
+import { zoomConfig } from '@/config/zoom'
 
 export type ZoomMode = 'normal' | 'max' | 'outOfRange' | 'void'
 
+export interface ZoomRange {
+  /** Distance minimale atteignable par la camera pour la cible courante */
+  minDistance: number
+  /** Distance du niveau 0 (defaut : rayon interieur de la sphere d'etoiles) */
+  farDistance?: number
+}
+
 export interface ZoomModeOptions {
-  thresholds: readonly number[]
-  maxDistance: number
-  voidMargin: number
+  minDistance: number
+  starfieldMin?: number
+  starfieldMax?: number
 }
 
-const defaultOptions: ZoomModeOptions = {
-  thresholds: zoomThresholds,
-  maxDistance: controlsConfig.maxDistance,
-  voidMargin: zoomVoidMargin,
+export function zoomLevelFromDistance(distance: number, range: ZoomRange): number {
+  const { minDistance, farDistance = starfieldConfig.minDistance } = range
+  if (distance <= minDistance) return zoomConfig.levels
+  if (distance >= farDistance) return 0
+  const progress = Math.log(distance / minDistance) / Math.log(farDistance / minDistance)
+  return Math.round(zoomConfig.levels * (1 - progress))
 }
 
-/** ~ Niveau de 0 (au-dela du dernier seuil) a `thresholds.length` (sous le premier). */
-export function zoomLevelFromDistance(
-  distance: number,
-  thresholds: readonly number[] = zoomThresholds,
-): number {
-  const index = thresholds.findIndex((threshold) => distance < threshold)
-  return index === -1 ? 0 : thresholds.length - index
-}
-
-export function zoomModeFromDistance(
-  distance: number,
-  options: ZoomModeOptions = defaultOptions,
-): ZoomMode {
-  const { thresholds, maxDistance, voidMargin } = options
-  if (distance >= maxDistance - voidMargin) return 'void'
-  if (distance <= thresholds[0]!) return 'max'
-  if (distance > thresholds[thresholds.length - 1]!) return 'outOfRange'
+export function zoomModeFromDistance(distance: number, options: ZoomModeOptions): ZoomMode {
+  const {
+    minDistance,
+    starfieldMin = starfieldConfig.minDistance,
+    starfieldMax = starfieldConfig.maxDistance,
+  } = options
+  if (distance >= starfieldMax) return 'void'
+  if (distance >= starfieldMin) return 'outOfRange'
+  if (distance <= minDistance * zoomConfig.maxTolerance) return 'max'
   return 'normal'
 }

@@ -9,7 +9,13 @@
     "wantToKnowMore": "EN SAVOIR PLUS ?",
     "timeSpeed": "VITESSE DU TEMPS",
     "lang": "LANGUE",
-    "tacticalView": "Vue tactique"
+    "tacticalView": "Vue tactique",
+    "timeScale": {
+      "hour": "1 s = 1 heure",
+      "day": "1 s = 1 jour",
+      "year": "1 s = 1 an"
+    },
+    "tactical": "TACTIQUE"
   },
   "drawer": {
     "optionsTitle": "Interface Utilisateur",
@@ -283,7 +289,7 @@
       },
       "time": {
         "title": "Controle du Temps",
-        "description": "Utilisez le controle de vitesse en bas pour accelerer ou ralentir la simulation orbitale."
+        "description": "Utilisez le controle du temps en bas : une heure, un jour ou une annee de simulation par seconde. Chaque vue demarre a son rythme : lent sur une planete, plus rapide en vue univers, le plus rapide en vue tactique."
       },
       "lang": {
         "title": "Langue",

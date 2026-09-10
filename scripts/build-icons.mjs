@@ -20,6 +20,7 @@ const wanted = {
     'close-circle-broken',
     'black-hole-bold',
     'asteroid-linear',
+    'asteroid-bold',
     'planet-bold-duotone',
     'mouse-bold-duotone',
     'cursor-bold-duotone',

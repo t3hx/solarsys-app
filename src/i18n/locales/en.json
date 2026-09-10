@@ -9,7 +9,13 @@
     "wantToKnowMore": "WANT TO KNOW MORE?",
     "timeSpeed": "TIMESPEED",
     "lang": "LANG",
-    "tacticalView": "Tactical view"
+    "tacticalView": "Tactical view",
+    "timeScale": {
+      "hour": "1 s = 1 hour",
+      "day": "1 s = 1 day",
+      "year": "1 s = 1 year"
+    },
+    "tactical": "TACTICAL"
   },
   "drawer": {
     "optionsTitle": "User Interface",
@@ -283,7 +289,7 @@
       },
       "time": {
         "title": "Time Control",
-        "description": "Use the time-scale control at the bottom to speed up or slow down the orbital simulation."
+        "description": "Use the time control at the bottom: one hour, one day or one year of simulation per second. Each view starts with its own pace: slow on a planet, faster in the universe view, fastest in the tactical view."
       },
       "lang": {
         "title": "Language",

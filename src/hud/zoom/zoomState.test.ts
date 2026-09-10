@@ -1,52 +1,61 @@
 import { describe, expect, it } from 'vitest'
-import { zoomThresholds } from '@/config/zoom'
+import { controlsConfig, starfieldConfig } from '@/config/scene'
 import { zoomLevelFromDistance, zoomModeFromDistance } from '@/hud/zoom/zoomState'
 
+const range = { minDistance: 100, farDistance: 10_000 }
+
 describe('zoomLevelFromDistance', () => {
-  it('uses the configured thresholds by default', () => {
-    expect(zoomThresholds).toHaveLength(10)
-    expect(zoomLevelFromDistance(100)).toBe(10)
+  it('is 10 at the minimum reachable distance and 0 at the far distance', () => {
+    expect(zoomLevelFromDistance(100, range)).toBe(10)
+    expect(zoomLevelFromDistance(10_000, range)).toBe(0)
   })
 
-  it('maps a distance below the first threshold to the maximum level', () => {
-    expect(zoomLevelFromDistance(0, [350, 450, 600])).toBe(3)
-    expect(zoomLevelFromDistance(349.9, [350, 450, 600])).toBe(3)
+  it('is logarithmic: the geometric middle of the range is level 5', () => {
+    expect(zoomLevelFromDistance(1000, range)).toBe(5)
+    expect(zoomLevelFromDistance(Math.sqrt(100 * 1000), range)).toBe(8)
   })
 
-  it('decreases by one level at each threshold', () => {
-    const thresholds = [350, 450, 600]
-    expect(zoomLevelFromDistance(350, thresholds)).toBe(2)
-    expect(zoomLevelFromDistance(449, thresholds)).toBe(2)
-    expect(zoomLevelFromDistance(450, thresholds)).toBe(1)
-    expect(zoomLevelFromDistance(599, thresholds)).toBe(1)
+  it('clamps below the minimum and beyond the far distance', () => {
+    expect(zoomLevelFromDistance(1, range)).toBe(10)
+    expect(zoomLevelFromDistance(1e6, range)).toBe(0)
   })
 
-  it('returns zero beyond the last threshold', () => {
-    expect(zoomLevelFromDistance(600, [350, 450, 600])).toBe(0)
-    expect(zoomLevelFromDistance(1e6, [350, 450, 600])).toBe(0)
+  it('uses the inner radius of the star sphere as the default far distance', () => {
+    expect(zoomLevelFromDistance(starfieldConfig.minDistance, { minDistance: 80 })).toBe(0)
   })
 })
 
 describe('zoomModeFromDistance', () => {
-  const options = { thresholds: [350, 450, 600], maxDistance: 5000, voidMargin: 1000 }
+  const options = { minDistance: 100, starfieldMin: 30_000, starfieldMax: 45_000 }
 
-  it('is "max" at or below the first threshold', () => {
-    expect(zoomModeFromDistance(350, options)).toBe('max')
-    expect(zoomModeFromDistance(10, options)).toBe('max')
+  it('is "max" at the minimum reachable distance, with a 1 % tolerance', () => {
+    expect(zoomModeFromDistance(100, options)).toBe('max')
+    expect(zoomModeFromDistance(100.9, options)).toBe('max')
+    expect(zoomModeFromDistance(102, options)).toBe('normal')
   })
 
-  it('is "normal" between the first and last thresholds', () => {
-    expect(zoomModeFromDistance(351, options)).toBe('normal')
-    expect(zoomModeFromDistance(600, options)).toBe('normal')
+  it('is "normal" up to the star sphere', () => {
+    expect(zoomModeFromDistance(1000, options)).toBe('normal')
+    expect(zoomModeFromDistance(29_999, options)).toBe('normal')
   })
 
-  it('is "outOfRange" beyond the last threshold but before the void', () => {
-    expect(zoomModeFromDistance(601, options)).toBe('outOfRange')
-    expect(zoomModeFromDistance(3999, options)).toBe('outOfRange')
+  it('is "outOfRange" inside the star sphere shell', () => {
+    expect(zoomModeFromDistance(30_000, options)).toBe('outOfRange')
+    expect(zoomModeFromDistance(44_999, options)).toBe('outOfRange')
   })
 
-  it('is "void" within the margin of the maximum camera distance', () => {
-    expect(zoomModeFromDistance(4000, options)).toBe('void')
-    expect(zoomModeFromDistance(5000, options)).toBe('void')
+  it('is "void" once the camera has left the star sphere', () => {
+    expect(zoomModeFromDistance(45_000, options)).toBe('void')
+    expect(zoomModeFromDistance(60_000, options)).toBe('void')
+  })
+
+  it('defaults to the star sphere radii of the scene configuration', () => {
+    expect(zoomModeFromDistance(starfieldConfig.maxDistance, { minDistance: 80 })).toBe('void')
+  })
+})
+
+describe('camera range', () => {
+  it('lets the camera leave the star sphere to see it from the void', () => {
+    expect(controlsConfig.maxDistance).toBeGreaterThan(starfieldConfig.maxDistance)
   })
 })
