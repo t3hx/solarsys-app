@@ -88,3 +88,24 @@ describe('interaction store', () => {
     expect(store().aboutOpen).toBe(false)
   })
 })
+
+describe('interaction store — re-selecting the selected body', () => {
+  beforeEach(() => store().reset())
+
+  it('keeps following (a click that ends a drag on the followed body is not a new selection)', () => {
+    store().select('earth')
+    store().setFollowing(true)
+    store().select('earth')
+    expect(store().selectedId).toBe('earth')
+    expect(store().isFollowing).toBe(true)
+  })
+
+  it('leaves the tactical view without dropping the selection', () => {
+    store().select('earth')
+    store().setFollowing(true)
+    store().toggleTactical()
+    store().select('earth')
+    expect(store().selectedId).toBe('earth')
+    expect(store().isTactical).toBe(false)
+  })
+})

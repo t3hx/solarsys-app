@@ -32,12 +32,17 @@ Vite 8, React 19, TypeScript 5.9 (strict), Tailwind v4 via `@tailwindcss/vite`, 
 - `useFrame` callbacks read `useStore.getState()`, never hooks.
 - Everything declarative where R3F allows it: helpers, layers and wireframe are JSX and props, not `scene.add/remove`.
 - TDD: write the failing test first, then the minimum code, then refactor with tests green. Pure logic (`src/physics`, `src/data`, formatters) must be covered.
+- Physical fidelity: rotation periods are positive and the obliquity (0–180°) alone orients the pole and carries the spin direction (IAU convention; `rotationDirection` is derived). `src/data/reference.test.ts` checks the shipped data against NASA Planetary Fact Sheet / JPL J2000 values: fix the data, never the tolerances. Sun light has no distance decay (showcase lighting, clear terminator on every body).
 - No `console.log` in committed code (`warn`/`error` only, and sparingly).
 - Never commit, push or merge unless asked. Branches `feat/*`, `fix/*`, `perf/*`, `ci/*`… from `dev`; squash merge into `dev`; `dev → main` by merge only. Pushing `main` deploys.
 
 ## Layout (target, see `docs/react-migration-plan.md` §3)
 
 `src/config`, `src/data`, `src/physics`, `src/store`, `src/scene`, `src/hud`, `src/windows`, `src/onboarding`, `src/i18n`, `src/styles`. Tests live next to the code as `*.test.ts(x)`. Playwright specs in `e2e/`.
+
+## Textures
+
+Source textures keep their full resolution: every body can be zoomed to its surface. Everything loads during the preloader and `SceneReadyMarker` uploads every texture to the GPU before the scene is declared ready: no loading and no GPU transfer during use (decision of 2026-09-10, after a progressive-loading attempt stalled the first selection). No lossy GPU compression (KTX2) by decision of 2026-09-07. Debug builds expose `window.solarsys.stats()` and `window.solarsys.scene()`.
 
 ## Deployment
 

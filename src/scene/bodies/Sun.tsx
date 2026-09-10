@@ -11,7 +11,7 @@ import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { starRadiusToUnits } from '@/physics/scaling'
 import { axialTiltRotation, bodyScale, bodyUserData } from '@/scene/bodies/bodyTransform'
 import { unitSphereGeometry } from '@/scene/bodies/geometry'
-import { useColorTexture } from '@/scene/bodies/useColorTexture'
+import { useBodyTextures } from '@/scene/bodies/useBodyTextures'
 import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
 import { BodyHelpers } from '@/scene/debug/BodyHelpers'
 import { useRegisterBody } from '@/scene/registry'
@@ -19,7 +19,7 @@ import { useDebugStore } from '@/store/debug'
 
 export function Sun({ body }: { body: Body }) {
   const meshRef = useRef<Mesh>(null)
-  const texture = useColorTexture(body.textures.main)
+  const texture = useBodyTextures(body).main ?? null
   const radius = starRadiusToUnits(body.radiusKm)
   useRegisterBody(body.id, meshRef, angularSpeedFromPeriodHours(body.rotationPeriodHours))
   const pointerHandlers = useBodyPointerHandlers(body.id)

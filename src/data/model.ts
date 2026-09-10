@@ -77,7 +77,8 @@ export interface Body {
   parentId?: string
   rank?: number
   knownMoons?: number
-  rotationDirection?: 'prograde' | 'retrograde'
+  /** Derive de l'obliquite : > 90° = retrograde (convention IAU) */
+  rotationDirection: 'prograde' | 'retrograde'
   satellites: Body[]
 }
 

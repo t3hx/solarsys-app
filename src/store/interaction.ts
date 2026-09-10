@@ -5,7 +5,9 @@
  *
  * Regles :
  * - le survol est ignore tant qu'un corps est selectionne ;
- * - selectionner (ou deselectionner) coupe le suivi et quitte la vue tactique ;
+ * - selectionner (ou deselectionner) coupe le suivi et quitte la vue tactique ; re-selectionner
+ *   le corps deja selectionne ne change rien (sinon un clic en fin de glissement sur le corps
+ *   suivi couperait le suivi), sauf quitter la vue tactique ;
  * - le suivi n'est actif que si un corps est selectionne (bascule par CameraRig en fin
  *   d'animation de focus) ;
  * - entrer en vue tactique suspend le suivi, CameraRig le restaure a la sortie ;
@@ -46,7 +48,11 @@ export const useInteractionStore = create<InteractionState>()((set, get) => ({
     if (get().selectedId !== null) return
     if (get().hoveredId !== id) set({ hoveredId: id })
   },
-  select: (id) =>
+  select: (id) => {
+    if (id !== null && id === get().selectedId) {
+      if (get().isTactical) set({ isTactical: false })
+      return
+    }
     set({
       selectedId: id,
       hoveredId: null,
@@ -54,7 +60,8 @@ export const useInteractionStore = create<InteractionState>()((set, get) => ({
       isTactical: false,
       infoOpen: false,
       aboutOpen: false,
-    }),
+    })
+  },
   setFollowing: (following) => {
     if (following && get().selectedId === null) return
     set({ isFollowing: following })

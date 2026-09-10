@@ -272,6 +272,22 @@ Branche `feat/windows-and-onboarding`.
 Critère : parité complète ; checklist §7 validée manuellement.
 
 ### Phase 8 — Performance et assets (2–3 j)
+
+> **Redéfinie le 2026-09-07** : chaque corps peut être zoomé jusqu'à sa surface, donc les textures sources gardent leur pleine résolution et aucune compression GPU (KTX2) n'est appliquée.
+>
+> **Revue le 2026-09-10** après test utilisateur : le chargement progressif (aperçus 2K au démarrage, pleine résolution chargée à la sélection) provoquait une attente visible au premier clic sur un corps. Décision : le préloader est là pour faire attendre, l'utilisation doit être fluide. Tout est donc chargé pendant le préloader, et `SceneReadyMarker` envoie toutes les textures au GPU (`renderer.initTexture`) avant de déclarer la scène prête. La phase conserve le filtrage anisotrope, la distance minimale de suivi au-dessus de la surface et l'API de mesure (`window.solarsys.stats()`).
+>
+> Mesures (Chromium, GPU Metal, serveur local) : scène prête en **≈ 5,3 s**, **0 requête réseau** après le préloader, 22 textures résidentes (**≈ 1,9 Go** estimés, comme la version Vue), première sélection sans chargement (pire frame 42–226 ms, moyenne 17–20 ms).
+>
+> **Fidélité physique (2026-09-10)**, à la demande de l'utilisateur (« le plus proche possible de la réalité ») :
+> - Convention de rotation IAU : période toujours positive, l'obliquité (0–180°) oriente le pôle et porte à elle seule le sens ; au-delà de 90° la rotation apparaît rétrograde. Les données comptaient le sens deux fois (obliquité > 90° **et** période négative pour Vénus, Uranus, Pluton), ce qui les faisait tourner dans le mauvais sens. `rotationDirection` n'est plus une donnée mais une valeur dérivée.
+> - Données corrigées : nœud ascendant de la Terre 0° → 174,873° (périhélie décalé de 175°), anomalie moyenne 358° → 357,517°, argument du périhélie de Neptune 276,336° → 273,187°.
+> - `src/data/reference.test.ts` compare les données livrées aux valeurs du NASA Planetary Fact Sheet et des éléments J2000 du JPL (obliquité, période de rotation, a, e, i, période, longitude du périhélie, anomalie moyenne) pour les huit planètes, Pluton et la Lune ; `SolarSystem.test` vérifie dans la scène l'angle pôle/normale orbitale et le sens de rotation. Les obliquités de Haumea (126°), Makemake (58°) et Éris (61,6°) ne figurent pas dans le fact sheet et restent non vérifiées.
+> - Éclairage : lumière solaire sans décroissance (`decay 0`, intensité 2,2) et ambiante 0,04 au lieu de décroissance 1,5 / ambiante 0,35 hérités de Vue, qui laissaient les planètes éclairées presque uniquement par l'ambiante (aucun terminateur sur les textures).
+> - Cadrage : distance de focus jamais inférieure à la distance minimale de suivi (la caméra était placée dans Cérès).
+> - Reste à faire pour aller plus loin : orientation azimutale des pôles (RA/Dec IAU des pôles nord, aujourd'hui le pôle est incliné dans une direction arbitraire du plan orbital), inclinaison de l'axe du Soleil (7,25°, aujourd'hui 0), obliquités des planètes naines à sourcer.
+>
+> Corrections livrées dans la même branche : ligne d'orbite à résolution adaptative (`orbitLineResolution`, écart maximal 4 % du rayon du corps ; à 512 segments fixes, Pluton, Haumea, Makemake et Éris étaient à plus d'un rayon de leur ligne une fois cadrés), clic de fin de glissement ignoré (`pointerConfig.clickMaxDistancePx`), re-sélection du corps suivi sans perte du suivi, et sélection depuis la vue tactique qui ne se fait plus annuler par la restauration de la vue.
 Branche `perf/textures-and-rendering`.
 - Script `scripts/convert-textures.mjs` (`toktx`/`basisu`) → KTX2 UASTC/ETC1S avec mipmaps ; résolutions : 2K par défaut, 4K Terre/Soleil, 8K Terre en LOD activé au-delà du niveau de zoom 8.
 - `useKTX2` (drei) + `KTX2Loader` transcoder dans `public/basis/`.

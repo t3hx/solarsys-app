@@ -4,6 +4,21 @@
  * par l'argument du perihelie), pretes pour un attribut `position` de BufferGeometry.
  * Meme parametrage que `physics/kepler` : plan XZ, Z negatif pour le sens prograde.
  */
+import { orbitLineDefaults } from '@/config/rendering'
+
+/**
+ * ~ Nombre de segments pour qu'une corde de la polyligne ne s'ecarte pas de l'ellipse de
+ * plus d'une fraction du rayon du corps : fleche d'une corde = a (1 - cos(pi / n)).
+ * Sans cela, une resolution fixe laisse les corps lointains (Pluton, Eris...) visiblement
+ * a cote de leur ligne d'orbite une fois cadres de pres.
+ */
+export function orbitLineResolution(semiMajorAxis: number, bodyRadius: number): number {
+  const { minResolution, maxResolution, maxDeviationRatio } = orbitLineDefaults
+  const maxDeviation = bodyRadius * maxDeviationRatio
+  if (semiMajorAxis <= 0 || maxDeviation >= 2 * semiMajorAxis) return minResolution
+  const segments = Math.ceil(Math.PI / Math.acos(1 - maxDeviation / semiMajorAxis))
+  return Math.min(maxResolution, Math.max(minResolution, segments))
+}
 
 export function ellipsePoints(
   semiMajorAxis: number,

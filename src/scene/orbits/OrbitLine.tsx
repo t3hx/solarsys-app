@@ -20,6 +20,8 @@ export interface OrbitLineProps {
   semiMajorAxis: number
   eccentricity: number
   argOfPerihelion: number
+  /** Nombre de segments (voir `orbitLineResolution`) */
+  resolution: number
 }
 
 export function OrbitLine({
@@ -28,13 +30,14 @@ export function OrbitLine({
   semiMajorAxis,
   eccentricity,
   argOfPerihelion,
+  resolution,
 }: OrbitLineProps) {
   const line = useMemo(() => {
     const geometry = new BufferGeometry()
     geometry.setAttribute(
       'position',
       new Float32BufferAttribute(
-        ellipsePoints(semiMajorAxis, eccentricity, argOfPerihelion, orbitLineDefaults.resolution),
+        ellipsePoints(semiMajorAxis, eccentricity, argOfPerihelion, resolution),
         3,
       ),
     )
@@ -47,7 +50,7 @@ export function OrbitLine({
     object.name = name
     object.userData = { id: `${bodyId}_orbit`, bodyId, type: 'orbit-line' }
     return object
-  }, [bodyId, name, semiMajorAxis, eccentricity, argOfPerihelion])
+  }, [bodyId, name, semiMajorAxis, eccentricity, argOfPerihelion, resolution])
 
   useEffect(
     () => () => {
