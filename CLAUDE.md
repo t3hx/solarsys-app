@@ -17,7 +17,7 @@ Linear project: `Solarsys` (team T3H). EPIC `T3H-182`, features `T3H-183` to `T3
 - `pnpm format` / `pnpm format:check` — Prettier
 - `pnpm typecheck` — `tsc -b`
 - `pnpm test` / `pnpm test:watch` / `pnpm test:coverage` — Vitest (jsdom)
-- `pnpm test:e2e` — Playwright (builds with `VITE_EXPOSE_DEBUG_API=1`, serves `dist/` on port 4177; the build exposes `window.solarsys` for tests only)
+- `pnpm test:e2e` — Playwright (builds with `VITE_EXPOSE_DEBUG_API=1`, serves `dist/` on port 4177). `window.solarsys` (debug API) exists in `pnpm dev` and in builds made with that flag, never in production builds
 - `pnpm icons` — regenerate `src/hud/icons.generated.json` (offline Iconify subset) after adding an icon name to `scripts/build-icons.mjs`
 
 ## Stack

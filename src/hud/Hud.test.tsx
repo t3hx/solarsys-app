@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { Hud } from '@/hud/Hud'
+import { seTriangleSize } from '@/hud/hudLayout'
 import { i18n } from '@/i18n'
 import { useCameraStore } from '@/store/camera'
 import { useDebugStore } from '@/store/debug'
@@ -64,13 +65,23 @@ describe('Hud', () => {
     )
   })
 
+  it('labels the tactical corner with an upright word stretched to the triangle width', () => {
+    render(<Hud system={solarSystemFixture} />)
+    const label = screen.getByText('TACTICAL')
+    expect(label).toHaveAttribute('textLength', String(seTriangleSize))
+    expect(label).toHaveAttribute('lengthAdjust', 'spacing')
+  })
+
   it('sets the simulation speed from the time scale presets', () => {
     render(<Hud system={solarSystemFixture} />)
-    const preset = screen.getByRole('button', { name: 'x10' })
+    const preset = screen.getByRole('button', { name: '1 s = 1 year' })
     fireEvent.click(preset)
-    expect(useSimulationStore.getState().speed).toBe(10)
+    expect(useSimulationStore.getState().speed).toBe(365.25)
     expect(preset).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('button', { name: 'x1' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: '1 s = 1 day' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
   })
 
   it('switches the language', async () => {

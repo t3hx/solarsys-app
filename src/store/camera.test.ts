@@ -4,27 +4,27 @@ import { useCameraStore } from '@/store/camera'
 describe('camera store', () => {
   beforeEach(() => useCameraStore.getState().reset())
 
-  it('starts at the level and mode of the home camera distance', () => {
-    // * Position initiale (0, 75, 1000) → distance ≈ 1003 u → niveau 6, mode normal
+  it('starts at the level and mode of the home camera above the Sun surface', () => {
+    // * Position initiale (0, 75, 1000) → distance ≈ 1003 u, minimum ≈ 83 u (surface du Soleil)
     expect(useCameraStore.getState().zoomLevel).toBe(6)
     expect(useCameraStore.getState().zoomMode).toBe('normal')
   })
 
-  it('derives the discrete level and mode from a distance', () => {
-    useCameraStore.getState().updateFromDistance(100)
+  it('derives the level and mode from the distance and the minimum reachable distance', () => {
+    useCameraStore.getState().updateFromDistance(1.7, 1.7)
     expect(useCameraStore.getState()).toMatchObject({ zoomLevel: 10, zoomMode: 'max' })
-    useCameraStore.getState().updateFromDistance(30_000)
+    useCameraStore.getState().updateFromDistance(30_000, 83)
     expect(useCameraStore.getState()).toMatchObject({ zoomLevel: 0, zoomMode: 'outOfRange' })
-    useCameraStore.getState().updateFromDistance(34_500)
+    useCameraStore.getState().updateFromDistance(50_000, 83)
     expect(useCameraStore.getState().zoomMode).toBe('void')
   })
 
   it('does not publish a new state when level and mode are unchanged', () => {
     let notifications = 0
     const unsubscribe = useCameraStore.subscribe(() => notifications++)
-    useCameraStore.getState().updateFromDistance(1000)
-    useCameraStore.getState().updateFromDistance(1001)
-    useCameraStore.getState().updateFromDistance(1100)
+    useCameraStore.getState().updateFromDistance(1000, 83)
+    useCameraStore.getState().updateFromDistance(1001, 83)
+    useCameraStore.getState().updateFromDistance(1100, 83)
     unsubscribe()
     expect(notifications).toBe(0)
   })

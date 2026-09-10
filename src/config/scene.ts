@@ -26,8 +26,8 @@ export const controlsConfig = {
   /** Temps de lissage des controles utilisateur (camera-controls) */
   smoothTime: 0.25,
   minDistance: 0.1,
-  /** Couvre l'aphelie d'Eris (~24 500 u) avec marge */
-  maxDistance: 35_000,
+  /** Au-dela de la sphere d'etoiles (45 000 u) : on peut la voir depuis le vide */
+  maxDistance: 60_000,
   maxPolarAngle: Math.PI / 2,
 } as const
 
