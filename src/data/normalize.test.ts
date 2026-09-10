@@ -36,8 +36,8 @@ describe('normalizeSolarSystem', () => {
     expect(byId.get('eris')!.lengthOfDayDisplay).toEqual({ value: 15.8, unit: 'days' })
   })
 
-  it('normalizes rotation periods to signed hours', () => {
-    expect(byId.get('venus')?.rotationPeriodHours).toBe(-5832)
+  it('normalizes rotation periods to positive hours (the tilt carries the direction)', () => {
+    expect(byId.get('venus')?.rotationPeriodHours).toBe(5832)
     expect(byId.get('sun')?.rotationPeriodHours).toBeCloseTo(25.4 * 24)
     expect(byId.get('eris')?.rotationPeriodHours).toBeCloseTo(15.8 * 24)
   })

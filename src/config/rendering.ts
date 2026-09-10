@@ -36,11 +36,13 @@ export const ringLayerDefaults = {
 
 export const sunLightConfig = {
   /**
-   * Intensite recalibree pour decay = 1.5 : illuminance ≈ 0.6 a la distance de la
-   * Terre (~325 u). Formule : 0.6 × 325^1.5 ≈ 3500.
+   * Pas d'attenuation avec la distance (decay 0) : chaque corps recoit la meme lumiere
+   * solaire, avec un terminateur jour/nuit franc, de Mercure a Eris. Une decroissance
+   * physique laisserait les planetes externes noires et forcerait une ambiante forte qui
+   * efface le terminateur (defaut de la version Vue).
    */
-  intensity: 3500,
-  decay: 1.5,
+  intensity: 2.2,
+  decay: 0,
 } as const
 
 export const specularProcessing = {
@@ -65,6 +67,9 @@ export const orbitLineDefaults = {
   opacity: 0.2,
   /** Opacite de la ligne du corps survole ou selectionne */
   highlightOpacity: 0.8,
-  /** Nombre de segments de l'ellipse */
-  resolution: 512,
+  /** Bornes du nombre de segments de l'ellipse (choisi par `orbitLineResolution`) */
+  minResolution: 256,
+  maxResolution: 4096,
+  /** Ecart maximal entre la polyligne et l'ellipse vraie, en fraction du rayon du corps */
+  maxDeviationRatio: 0.04,
 } as const

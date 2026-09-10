@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { orbitalPosition } from '@/physics/kepler'
-import { ellipsePoints } from '@/scene/orbits/orbitGeometry'
+import { orbitLineDefaults } from '@/config/rendering'
+import { ellipsePoints, orbitLineResolution } from '@/scene/orbits/orbitGeometry'
 
 function radiusAt(points: Float32Array, index: number): number {
   return Math.hypot(points[index * 3]!, points[index * 3 + 2]!)
@@ -53,5 +54,51 @@ describe('ellipsePoints', () => {
     )
     expect(points[0]).toBeCloseTo(perihelion.x, 3)
     expect(points[2]).toBeCloseTo(perihelion.z, 3)
+  })
+})
+
+function distanceToPolyline(x: number, z: number, points: Float32Array): number {
+  let best = Infinity
+  const segments = points.length / 3 - 1
+  for (let i = 0; i < segments; i++) {
+    const ax = points[i * 3]!
+    const az = points[i * 3 + 2]!
+    const dx = points[i * 3 + 3]! - ax
+    const dz = points[i * 3 + 5]! - az
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz)))
+    best = Math.min(best, Math.hypot(x - (ax + t * dx), z - (az + t * dz)))
+  }
+  return best
+}
+
+describe('orbitLineResolution', () => {
+  it('keeps every body within a twentieth of its radius of its orbit line', () => {
+    // * Cas reels : Eris (a ≈ 17 070, e = 0,436, rayon 0,25) et Pluton (a ≈ 10 020, e = 0,249, rayon 0,255)
+    const cases = [
+      { a: 17070, e: 0.436, omega: 2.63, radius: 0.25 },
+      { a: 10020, e: 0.249, omega: 1.98, radius: 0.255 },
+      { a: 841, e: 0.076, omega: 1.28, radius: 0.101 },
+    ]
+    for (const { a, e, omega, radius } of cases) {
+      const resolution = orbitLineResolution(a, radius)
+      const points = ellipsePoints(a, e, omega, resolution)
+      const orbit = {
+        semiMajorAxis: a,
+        eccentricity: e,
+        argOfPerihelion: omega,
+        meanAnomalyAtEpoch: 0,
+        periodDays: 1,
+      }
+      for (let t = 0; t < 1; t += 1 / 40) {
+        const { x, z } = orbitalPosition(orbit, t)
+        expect(distanceToPolyline(x, z, points)).toBeLessThan(radius / 20)
+      }
+    }
+  })
+
+  it('uses more segments for distant orbits than for near ones, within bounds', () => {
+    expect(orbitLineResolution(17070, 0.25)).toBeGreaterThan(orbitLineResolution(399, 1.37))
+    expect(orbitLineResolution(1, 100)).toBe(orbitLineDefaults.minResolution)
+    expect(orbitLineResolution(1e9, 0.001)).toBe(orbitLineDefaults.maxResolution)
   })
 })

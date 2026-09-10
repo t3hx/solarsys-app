@@ -1,7 +1,9 @@
 import type * as Drei from '@react-three/drei'
 import ReactThreeTestRenderer from '@react-three/test-renderer'
-import type { Mesh, MeshStandardMaterial, Object3D } from 'three'
+import type { Line, Mesh, MeshStandardMaterial, Object3D, PointLight } from 'three'
+import { Vector3 } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { orbitLineDefaults } from '@/config/rendering'
 import { orbitalPosition } from '@/physics/kepler'
 import { angularSpeedFromPeriodHours } from '@/physics/rotation'
 import { RegistryProvider, createRegistry } from '@/scene/registry'
@@ -72,7 +74,7 @@ describe('SolarSystem', () => {
     const renderer = await mount(registry)
     expect([...registry.bodies()]).toHaveLength(15)
     expect([...registry.orbits()]).toHaveLength(14)
-    expect(registry.getBody('venus')?.rotationSpeed).toBeLessThan(0)
+    expect(registry.getBody('venus')?.rotationSpeed).toBeGreaterThan(0)
     await renderer.unmount()
     expect([...registry.bodies()]).toHaveLength(0)
   })
@@ -92,14 +94,46 @@ describe('SolarSystem', () => {
     await renderer.unmount()
   })
 
-  it('spins bodies around their axis, backwards for Venus', async () => {
+  it('spins every body counter-clockwise around its own pole, at its rotation speed', async () => {
     const registry = createRegistry()
     const renderer = await mount(registry)
     await renderer.advanceFrames(4, 0.25)
-    const venus = registry.getBody('venus')!
-    const expected = angularSpeedFromPeriodHours(-5832) * 1
-    expect(venus.mesh.rotation.y).toBeCloseTo(expected, 6)
-    expect(venus.mesh.rotation.y).toBeLessThan(0)
+    for (const id of ['earth', 'venus', 'uranus']) {
+      const body = system.byId.get(id)!
+      const expected = angularSpeedFromPeriodHours(body.rotationPeriodHours) * 1
+      expect(registry.getBody(id)!.mesh.rotation.y, id).toBeCloseTo(expected, 6)
+      expect(registry.getBody(id)!.mesh.rotation.y, id).toBeGreaterThan(0)
+    }
+    await renderer.unmount()
+  })
+
+  it('tilts each pole by the axial tilt from its orbit normal, so an obliquity above 90° reads as retrograde', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    const poleOf = (id: string) => {
+      const { mesh } = registry.getBody(id)!
+      mesh.updateWorldMatrix(true, false)
+      const origin = mesh.getWorldPosition(new Vector3())
+      return mesh
+        .localToWorld(new Vector3(0, 1, 0))
+        .sub(origin)
+        .normalize()
+    }
+    const orbitNormalOf = (id: string) => {
+      const orbitGroup = registry.getBody(id)!.mesh.parent!.parent!
+      return orbitGroup
+        .localToWorld(new Vector3(0, 1, 0))
+        .sub(orbitGroup.getWorldPosition(new Vector3()))
+        .normalize()
+    }
+    for (const id of ['earth', 'venus', 'uranus', 'pluto']) {
+      const tilt = system.byId.get(id)!.axialTilt
+      expect(poleOf(id).angleTo(orbitNormalOf(id)), id).toBeCloseTo(tilt, 5)
+    }
+    // * Venus (177°) et Pluton (122°) : pole sous le plan orbital → rotation retrograde vue du nord
+    expect(poleOf('venus').dot(orbitNormalOf('venus'))).toBeLessThan(0)
+    expect(poleOf('pluto').dot(orbitNormalOf('pluto'))).toBeLessThan(0)
+    expect(poleOf('earth').dot(orbitNormalOf('earth'))).toBeGreaterThan(0)
     await renderer.unmount()
   })
 
@@ -235,6 +269,44 @@ describe('SolarSystem', () => {
       expect(renderer.scene.findByProps({ name: 'Mars' }).findAllByType('GridHelper')).toHaveLength(
         0,
       )
+      await renderer.unmount()
+    })
+  })
+
+  describe('textures', () => {
+    it('loads the full-resolution textures of every body up front', async () => {
+      const renderer = await mount()
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const material = earth.material as MeshStandardMaterial
+      expect(material.map?.userData.url).toBe('/textures/8k_earth_daymap.jpg')
+      const neptune = renderer.scene.findByProps({ name: 'Neptune' }).instance as Mesh
+      expect((neptune.material as MeshStandardMaterial).map?.userData.url).toBe(
+        '/textures/2k_neptune.jpg',
+      )
+      await renderer.unmount()
+    })
+  })
+
+  describe('sunlight', () => {
+    it('lights every body with the same strength whatever its distance (no decay)', async () => {
+      const renderer = await mount()
+      const light = renderer.scene.find((node) => node.instance.type === 'PointLight')
+        .instance as unknown as PointLight
+      expect(light.decay).toBe(0)
+      expect(light.distance).toBe(0)
+      await renderer.unmount()
+    })
+  })
+
+  describe('orbit lines', () => {
+    it('draws distant orbits with more segments than near ones', async () => {
+      const renderer = await mount()
+      const segmentsOf = (bodyId: string) => {
+        const line = renderer.scene.find((node) => node.instance.userData?.bodyId === bodyId)
+        return (line.instance as unknown as Line).geometry.getAttribute('position').count - 1
+      }
+      expect(segmentsOf('earth')).toBeGreaterThanOrEqual(orbitLineDefaults.minResolution)
+      expect(segmentsOf('pluto')).toBeGreaterThan(segmentsOf('earth'))
       await renderer.unmount()
     })
   })

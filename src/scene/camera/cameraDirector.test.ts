@@ -1,7 +1,12 @@
 import { Vector3 } from 'three'
 import { describe, expect, it } from 'vitest'
 import { cameraConfig, cameraFocusConfig, tacticalViewConfig } from '@/config/scene'
-import { focusPlacement, homePlacement, tacticalPlacement } from '@/scene/camera/cameraDirector'
+import {
+  focusPlacement,
+  followMinDistance,
+  homePlacement,
+  tacticalPlacement,
+} from '@/scene/camera/cameraDirector'
 
 describe('focusPlacement', () => {
   const fov = cameraConfig.fov
@@ -33,9 +38,27 @@ describe('focusPlacement', () => {
     expect(position.distanceTo(target)).toBeGreaterThanOrEqual(cameraFocusConfig.minFocusDistance)
   })
 
-  it('falls back to a fixed direction for a body at the origin (the Sun)', () => {
-    const { position } = focusPlacement(new Vector3(0, 0, 0), 75, fov)
-    expect(position.z).toBeLessThan(0)
+  it('never frames a body closer than the follow minimum distance (Ceres, radius 0.1)', () => {
+    const radius = 0.101
+    const { position, target } = focusPlacement(new Vector3(0, 0, 840), radius, fov)
+    expect(position.distanceTo(target)).toBeGreaterThanOrEqual(followMinDistance(radius))
+  })
+
+  it('frames a body at the origin (the Sun) from the side the camera already is on', () => {
+    const from = new Vector3(-300, 40, -400)
+    const { position, target } = focusPlacement(new Vector3(0, 0, 0), 75, fov, from)
+    expect(target.length()).toBe(0)
+    // * Meme cote que la camera de depart : la course ne traverse pas le Soleil
+    const fromSide = new Vector3(from.x, 0, from.z).normalize()
+    const toCamera = new Vector3(position.x, 0, position.z).normalize()
+    expect(toCamera.dot(fromSide)).toBeCloseTo(1, 6)
+    expect(position.y).toBeGreaterThan(0)
+    expect(position.length()).toBeGreaterThan(75)
+  })
+
+  it('falls back to a fixed direction for the Sun when the camera is straight above it', () => {
+    const { position } = focusPlacement(new Vector3(0, 0, 0), 75, fov, new Vector3(0, 28000, 0))
+    expect(position.z).toBeGreaterThan(0)
     expect(position.y).toBeGreaterThan(0)
     expect(Number.isFinite(position.x)).toBe(true)
   })

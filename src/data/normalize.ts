@@ -86,6 +86,7 @@ function normalizeBody(raw: RawPlanet, kind: BodyKind, parentId?: string): Body 
   const id = raw.id
   const rotationUnit = parseTimeUnit(physical.rotationPeriodUnit, 'hours')
   const dayUnit = parseTimeUnit(physical.lengthOfDayUnit, 'hours')
+  const axialTilt = degToRad(toNumber(physical.axialTilt) ?? 0)
 
   const body: Body = {
     id,
@@ -95,11 +96,13 @@ function normalizeBody(raw: RawPlanet, kind: BodyKind, parentId?: string): Body 
     textures: normalizeTextures(raw.textures),
     radiusKm: requireNumber(physical.meanRadius, 'meanRadius', id),
     oblateness: toNumber(physical.oblateness) ?? 0,
-    axialTilt: degToRad(toNumber(physical.axialTilt) ?? 0),
-    rotationPeriodHours: toHours(
-      requireNumber(physical.rotationPeriod, 'rotationPeriod', id),
-      rotationUnit,
+    axialTilt,
+    // * Periode toujours positive : le sens de rotation est porte par l'obliquite (IAU).
+    // * Une obliquite > 90° retourne le pole, donc la rotation apparait retrograde.
+    rotationPeriodHours: Math.abs(
+      toHours(requireNumber(physical.rotationPeriod, 'rotationPeriod', id), rotationUnit),
     ),
+    rotationDirection: axialTilt > Math.PI / 2 ? 'retrograde' : 'prograde',
     massKg: requireNumber(physical.mass, 'mass', id),
     densityKgM3: requireNumber(physical.density, 'density', id),
     surfaceGravityG: requireNumber(physical.surfaceGravity, 'surfaceGravity', id),
@@ -122,7 +125,6 @@ function normalizeBody(raw: RawPlanet, kind: BodyKind, parentId?: string): Body 
   if (parentId !== undefined) body.parentId = parentId
   if (raw.rank !== undefined) body.rank = raw.rank
   if (raw.numberOfMoons !== undefined) body.knownMoons = raw.numberOfMoons
-  if (raw.rotationDirection !== undefined) body.rotationDirection = raw.rotationDirection
 
   if (raw.satellites) {
     body.satellites = Object.values(raw.satellites).map((satellite) =>

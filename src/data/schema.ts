@@ -80,7 +80,6 @@ const rawBodyBaseSchema = z.object({
   orbitalProps: rawOrbitalPropsSchema,
   rank: z.number().optional(),
   numberOfMoons: z.number().optional(),
-  rotationDirection: z.enum(['prograde', 'retrograde']).optional(),
 })
 
 export const rawSatelliteSchema = rawBodyBaseSchema

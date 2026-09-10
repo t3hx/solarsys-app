@@ -1,7 +1,8 @@
 /**
  * @module physics/rotation
  * @description Periode de rotation → vitesse angulaire, en radians par jour simule.
- * Une periode negative (Venus, Uranus, Pluton) donne une vitesse negative : rotation retrograde.
+ * La periode est positive : le corps tourne dans le sens direct autour de son propre pole, et
+ * c'est l'obliquite (> 90° pour Venus, Uranus, Pluton) qui rend la rotation retrograde.
  */
 import { HOURS_PER_DAY } from '@/physics/units'
 

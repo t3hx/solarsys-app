@@ -33,7 +33,8 @@ export const controlsConfig = {
 
 export const ambientLightConfig = {
   color: colors.white,
-  intensity: 0.35,
+  /** Faible : juste de quoi deviner la face nuit, le Soleil fait le reste */
+  intensity: 0.04,
 } as const
 
 export const starfieldConfig = {
@@ -53,6 +54,9 @@ export const frameOrder = {
   simulation: -20,
   cameraFollow: -10,
 } as const
+
+/** Deplacement maximal du pointeur (px) entre l'appui et le relachement pour compter un clic */
+export const pointerConfig = { clickMaxDistancePx: 5 } as const
 
 /** Seuil de selection des lignes d'orbite : base + proportionnel a la distance camera */
 export const lineRaycastThreshold = { base: 2, perUnitOfDistance: 0.004 } as const

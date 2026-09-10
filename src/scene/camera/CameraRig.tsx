@@ -9,8 +9,11 @@
  * - focus : placement calcule par `cameraDirector`, cible recalculee a chaque tick (le corps
  *   bouge pendant l'animation), puis suivi par `moveTo` sur la position monde a chaque frame ;
  * - vue tactique : sauvegarde de l'etat courant, montee au-dessus du systeme, restauration a la
- *   sortie et reprise du suivi s'il etait actif ;
- * - a chaque frame : niveau de zoom depuis la distance, seuil de raycast des lignes d'orbite.
+ *   sortie et reprise du suivi s'il etait actif ; si la sortie vient d'une selection (clic sur
+ *   un corps depuis la vue tactique), c'est le focus qui prend la main, pas la restauration ;
+ * - a chaque frame : niveau de zoom depuis la distance, seuil de raycast des lignes d'orbite ;
+ * - en suivi, la distance minimale est relevee au rayon du corps : la camera ne peut plus
+ *   entrer dans la planete au zoom maximal.
  *
  * Le focus ne modifie plus la vitesse de simulation (audit B5).
  */
@@ -28,13 +31,20 @@ import {
   tacticalViewConfig,
 } from '@/config/scene'
 import type { CameraPlacement } from '@/scene/camera/cameraDirector'
-import { focusPlacement, homePlacement, tacticalPlacement } from '@/scene/camera/cameraDirector'
+import {
+  focusPlacement,
+  followMinDistance,
+  homePlacement,
+  tacticalPlacement,
+} from '@/scene/camera/cameraDirector'
 import { useRegistry } from '@/scene/registry'
+import { isDebugApiEnabled } from '@/debug/exposeDebugApi'
 import { useCameraStore } from '@/store/camera'
 import { useInteractionStore } from '@/store/interaction'
 
 interface SavedState extends CameraPlacement {
   wasFollowing: boolean
+  selectedId: string | null
 }
 
 export function CameraRig() {
@@ -46,6 +56,32 @@ export function CameraRig() {
 
   const selectedId = useInteractionStore((state) => state.selectedId)
   const isTactical = useInteractionStore((state) => state.isTactical)
+  const isFollowing = useInteractionStore((state) => state.isFollowing)
+
+  // ~ Distance minimale : rayon du corps suivi (avec marge), sinon la valeur de configuration
+  useEffect(() => {
+    const controls = controlsRef.current
+    if (!controls) return
+    const entry = isFollowing && selectedId ? registry.getBody(selectedId) : undefined
+    controls.minDistance = entry
+      ? followMinDistance(Math.max(entry.mesh.scale.x, entry.mesh.scale.y, entry.mesh.scale.z))
+      : controlsConfig.minDistance
+  }, [isFollowing, selectedId, registry])
+
+  // ~ API de debug (captures et mesures) : placer la camera a une distance donnee de la cible
+  useEffect(() => {
+    if (!isDebugApiEnabled() || !window.solarsys) return undefined
+    window.solarsys.setDistance = (distance: number) => {
+      void controlsRef.current?.dollyTo(distance, false)
+    }
+    window.solarsys.rotateCamera = (azimuth: number, polar: number) => {
+      void controlsRef.current?.rotate(azimuth, polar, false)
+    }
+    return () => {
+      delete window.solarsys?.setDistance
+      delete window.solarsys?.rotateCamera
+    }
+  }, [])
 
   /** ~ Interpole de l'etat courant vers `getEnd()` (reevalue a chaque tick) en `duration` s. */
   const transitionTo = useCallback(
@@ -113,8 +149,9 @@ export function CameraRig() {
       (mesh.geometry.boundingSphere?.radius ?? 1) *
       Math.max(mesh.scale.x, mesh.scale.y, mesh.scale.z)
     const worldPosition = new Vector3()
+    const from = controlsRef.current?.getPosition(new Vector3(), false)
     transitionTo(
-      () => focusPlacement(mesh.getWorldPosition(worldPosition), radius, cameraConfig.fov),
+      () => focusPlacement(mesh.getWorldPosition(worldPosition), radius, cameraConfig.fov, from),
       cameraFocusConfig.focusDuration,
       () => useInteractionStore.getState().setFollowing(true),
     )
@@ -133,13 +170,20 @@ export function CameraRig() {
         position: controls.getPosition(new Vector3(), true),
         target: controls.getTarget(new Vector3(), true),
         wasFollowing: state.selectedId !== null,
+        selectedId: state.selectedId,
       }
       transitionTo(tacticalPlacement, tacticalViewConfig.transitionDuration, () => undefined)
       return
     }
 
-    const saved = savedRef.current ?? { ...homePlacement(), wasFollowing: false }
+    const saved = savedRef.current ?? {
+      ...homePlacement(),
+      wasFollowing: false,
+      selectedId: null,
+    }
     savedRef.current = null
+    // * Sortie provoquee par la selection d'un autre corps : l'effet de focus est deja lance
+    if (useInteractionStore.getState().selectedId !== saved.selectedId) return
     transitionTo(
       () => saved,
       tacticalViewConfig.transitionDuration,

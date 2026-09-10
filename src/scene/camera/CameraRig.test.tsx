@@ -2,8 +2,9 @@ import type * as Drei from '@react-three/drei'
 import ReactThreeTestRenderer from '@react-three/test-renderer'
 import { Vector3 } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { cameraConfig, cameraFocusConfig, tacticalViewConfig } from '@/config/scene'
+import { cameraConfig, cameraFocusConfig, controlsConfig, tacticalViewConfig } from '@/config/scene'
 import { CameraRig } from '@/scene/camera/CameraRig'
+import { followMinDistance } from '@/scene/camera/cameraDirector'
 import { createRegistry, RegistryProvider } from '@/scene/registry'
 import { SimulationDriver } from '@/scene/simulation/SimulationDriver'
 import { SolarSystem } from '@/scene/SolarSystem'
@@ -39,6 +40,8 @@ const fake = vi.hoisted(() => {
     get distance() {
       return state.distance
     },
+    minDistance: 0.1,
+    dollyTo: vi.fn(),
   }
   return { state, controls }
 })
@@ -97,6 +100,7 @@ describe('CameraRig', () => {
     fake.state.position = [0, 75, 1000]
     fake.state.target = [0, 0, 0]
     fake.state.distance = 1003
+    fake.controls.minDistance = 0.1
     tweens.durations.length = 0
   })
 
@@ -117,6 +121,30 @@ describe('CameraRig', () => {
     expect([tx, ty, tz]).toEqual(earthPosition.toArray())
     expect(Math.hypot(px, pz)).toBeLessThan(Math.hypot(earthPosition.x, earthPosition.z))
     expect(interaction().isFollowing).toBe(true)
+    await renderer.unmount()
+  })
+
+  it('focuses the Sun without crossing it: the camera stays on its current side', async () => {
+    const renderer = await mount()
+    fake.state.position = [200, 75, -1000]
+    fake.state.target = [0, 0, 0]
+    await act(() => interaction().select('sun'))
+    const [px, , pz, tx, ty, tz] = fake.controls.setLookAt.mock.calls.at(-1)!
+    expect([tx, ty, tz]).toEqual([0, 0, 0])
+    expect(pz).toBeLessThan(0)
+    expect(px).toBeGreaterThan(0)
+    await renderer.unmount()
+  })
+
+  it('keeps the camera above the surface of the followed body', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    await act(() => interaction().select('earth'))
+    const earthRadius = registry.getBody('earth')!.mesh.scale.x
+    expect(fake.controls.minDistance).toBeCloseTo(followMinDistance(earthRadius), 6)
+    expect(followMinDistance(earthRadius)).toBeGreaterThan(earthRadius + cameraConfig.near)
+    await act(() => interaction().select(null))
+    expect(fake.controls.minDistance).toBe(controlsConfig.minDistance)
     await renderer.unmount()
   })
 
@@ -173,6 +201,22 @@ describe('CameraRig', () => {
     await act(() => interaction().toggleTactical())
     expect(interaction().isFollowing).toBe(false)
     await act(() => interaction().toggleTactical())
+    expect(interaction().isFollowing).toBe(true)
+    await renderer.unmount()
+  })
+
+  it('selecting a body from the tactical view focuses it instead of restoring the saved view', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    fake.state.position = [120, 30, 400]
+    fake.state.target = [100, 0, 380]
+    await act(() => interaction().toggleTactical())
+
+    await act(() => interaction().select('mars'))
+    const [, , , tx, ty, tz] = fake.controls.setLookAt.mock.calls.at(-1)!
+    const marsPosition = registry.getBody('mars')!.mesh.getWorldPosition(new Vector3())
+    expect([tx, ty, tz]).toEqual(marsPosition.toArray())
+    expect(interaction().isTactical).toBe(false)
     expect(interaction().isFollowing).toBe(true)
     await renderer.unmount()
   })
