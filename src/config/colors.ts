@@ -17,21 +17,23 @@ export const colors = {
 
 /**
  * Couleur tactique de chaque corps heliocentrique : lignes d'orbite et etiquettes de la
- * vue tactique. Logique « couleur evidente » (Mars rouge, Terre verte, Neptune bleue,
- * Uranus cyan, Venus jaune...), toutes lisibles sur fond noir.
+ * vue tactique. Les corps a couleur evidente la gardent (Mars rouge, Terre verte, Neptune
+ * bleue, Uranus cyan, Venus jaune, Jupiter orange) ; les autres recoivent le reste du
+ * spectre, reparti pour que chaque ligne reste distinguable sur fond noir (test de
+ * distance par paire dans tacticalColors.test).
  */
 export const tacticalColors: Record<string, string> = {
-  mercury: '#BFB9AC',
-  venus: '#FFD54A',
-  earth: '#30D158',
-  mars: '#FF5A4D',
-  jupiter: '#FFA94D',
-  saturn: '#F2CE7B',
-  uranus: '#55E0E8',
-  neptune: '#5C8CFF',
-  pluto: '#D7A97C',
-  ceres: '#AEBDC6',
-  haumea: '#E8ECF5',
-  makemake: '#E8906B',
-  eris: '#CBB8F0',
+  mars: '#FF4433',
+  jupiter: '#FFA02E',
+  venus: '#FFE84D',
+  saturn: '#AEF23C',
+  earth: '#27E35F',
+  makemake: '#16F7D0',
+  uranus: '#38BDFF',
+  neptune: '#3D5BFF',
+  pluto: '#8E64FF',
+  eris: '#D24DFF',
+  mercury: '#FF49C1',
+  haumea: '#FF7080',
+  ceres: '#F5F5F5',
 }

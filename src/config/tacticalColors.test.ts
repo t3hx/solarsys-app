@@ -40,6 +40,20 @@ describe('tacticalColors', () => {
     }
   })
 
+  it('keeps every pair of colors clearly distinguishable', () => {
+    for (let i = 0; i < HELIOCENTRIC_IDS.length; i++) {
+      for (let j = i + 1; j < HELIOCENTRIC_IDS.length; j++) {
+        const [r1, g1, b1] = channels(tacticalColors[HELIOCENTRIC_IDS[i]])
+        const [r2, g2, b2] = channels(tacticalColors[HELIOCENTRIC_IDS[j]])
+        const distance = Math.hypot(r1 - r2, g1 - g2, b1 - b2)
+        expect(
+          distance,
+          `${HELIOCENTRIC_IDS[i]} and ${HELIOCENTRIC_IDS[j]} look alike`,
+        ).toBeGreaterThan(70)
+      }
+    }
+  })
+
   it('follows the expected color logic for the well-known planets', () => {
     const [mr, mg, mb] = channels(tacticalColors.mars)
     expect(mr).toBeGreaterThan(mg)

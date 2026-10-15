@@ -1,16 +1,17 @@
 /**
  * @module scene/labels/labelColumns
- * @description Repartition des etiquettes tactiques en deux colonnes fixes, a gauche et a
- * droite de l'ecran : l'ordre d'entree (distance croissante au Soleil) alterne gauche /
- * droite, chaque colonne se lit donc de haut en bas du plus proche au plus lointain.
- * Positions en pixels, proportionnelles a la taille de la fenetre. Pur.
+ * @description Repartition des etiquettes tactiques en deux colonnes fixes : la moitie la
+ * plus proche du Soleil a gauche, lue de haut en bas ; la moitie la plus lointaine a
+ * droite, remontant de bas en haut (le plus lointain finit en haut a droite). La bande
+ * verticale evite les decorations des coins du HUD. Positions en pixels, proportionnelles
+ * a la taille de la fenetre. Pur.
  */
 
 /** Abscisse des colonnes, en fraction de la largeur (bord interieur de la boite) */
 const COLUMN_X = 0.15
 /** Bande verticale occupee par les colonnes, en fraction de la hauteur */
-const BAND_TOP = 0.16
-const BAND_BOTTOM = 0.84
+const BAND_TOP = 0.15
+const BAND_BOTTOM = 0.78
 
 export interface ColumnSlot {
   side: 'left' | 'right'
@@ -29,12 +30,12 @@ export function labelColumns(count: number, width: number, height: number): Colu
     return top + (row * (bottom - top)) / (rows - 1)
   }
   return Array.from({ length: count }, (_, index) => {
-    const side = index % 2 === 0 ? 'left' : 'right'
-    const row = Math.floor(index / 2)
-    return {
-      side,
-      x: side === 'left' ? width * COLUMN_X : width * (1 - COLUMN_X),
-      y: slotY(row, side === 'left' ? leftCount : rightCount),
-    } as const
+    if (index < leftCount) {
+      // ~ Moitie proche : colonne gauche, de haut en bas
+      return { side: 'left', x: width * COLUMN_X, y: slotY(index, leftCount) } as const
+    }
+    // ~ Moitie lointaine : colonne droite, de bas en haut
+    const row = rightCount - 1 - (index - leftCount)
+    return { side: 'right', x: width * (1 - COLUMN_X), y: slotY(row, rightCount) } as const
   })
 }

@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 5;
-  /* ~ Sous le cadre HUD (z 10) mais au-dessus du canvas */
+  /* ~ Sous le cadre HUD (z 10) mais au-dessus du canvas ; seules les boites sont cliquables */
   pointer-events: none;
   user-select: none;
   animation: fadeIn 0.35s ease;
@@ -17,17 +17,59 @@
   opacity: 0.85;
 }
 
-/* ~ Boite : taille et texte proportionnels a la fenetre (clamp vw/vh) */
+/* ~ Reticule : ancre positionnee par frame sur le corps, anneaux animes en CSS */
+.reticleAnchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.reticle {
+  position: absolute;
+  width: clamp(22px, 1.2vw + 1.2vh, 42px);
+  height: clamp(22px, 1.2vw + 1.2vh, 42px);
+  translate: -50% -50%;
+  border: 1.5px dashed currentColor;
+  border-radius: 50%;
+  animation: spin 7s linear infinite;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.reticleDot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* ~ Boite : taille et texte proportionnels a la fenetre (clamp vw/vh), cliquable */
 .box {
   position: absolute;
+  pointer-events: auto;
   padding: 0.4em 0.9em;
   border: 2px solid;
   background: rgba(0, 0, 0, 0.75);
   color: white;
+  font-family: inherit;
   font-size: clamp(13px, 0.55vw + 0.9vh, 26px);
   font-weight: 600;
   letter-spacing: 0.12em;
   white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.box:hover,
+.box:focus-visible {
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 14px currentColor;
 }
 
 /* ~ Colonne gauche : la boite s'etend a gauche de son ancre */
@@ -48,8 +90,29 @@
   }
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .overlay {
+  .overlay,
+  .reticle,
+  .reticleDot {
     animation: none;
   }
 }
