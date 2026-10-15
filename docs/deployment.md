@@ -34,9 +34,15 @@ sur le **port 8080**.
 ## Preuve de mise en ligne
 
 Le Dockerfile écrit `dist/version.json` (`{"version":"vX.Y.Z"}` en prod, `dev-<sha>` en
-preprod) via le build-arg `APP_VERSION`. Après le webhook, la CI interroge
-`<URL>/version.json` jusqu'à 5 minutes : si l'environnement ne sert pas la version attendue,
-**le job échoue** — un webhook qui répond 200 sans rien déployer ne passe pas inaperçu.
+preprod) via le build-arg `APP_VERSION`. Après le webhook, la CI interroge `version.json`
+jusqu'à 5 minutes : si l'environnement ne sert pas la version attendue, **le job échoue** —
+un webhook qui répond 200 sans rien déployer ne passe pas inaperçu.
+
+La vérification se fait **à l'origine, par le tailnet** : la preprod via son DNS (qui
+pointe sur l'IP Tailscale), la prod via `--resolve <host>:80:$VPS_TAILSCALE_IP` (variable
+de repo) directement sur Traefik — car l'anti-bot de Cloudflare, qui proxifie la prod,
+répond 403 aux IPs de datacenter des runners GitHub. L'ACL Tailscale de `tag:ci` doit donc
+autoriser le VPS sur les ports **443 et 80**.
 
 ## Versioning
 
