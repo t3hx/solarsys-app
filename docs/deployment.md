@@ -24,8 +24,8 @@ par construction : le tag et la Release ne sont créés qu'après la preuve de m
 
 | Env | Branche | Image | App Dokploy | Secret webhook | Variable URL |
 |---|---|---|---|---|---|
-| Preprod | `dev` | `ghcr.io/t3hx/solarsys-app:preprod` (+ `dev-<sha>`) | `solarsys-preprod` | `DOKPLOY_PREPROD_WEBHOOK_URL` | `PREPROD_URL` |
-| Prod | `main` | `ghcr.io/t3hx/solarsys-app:latest` (+ `vX.Y.Z`, `main-<sha>`) | `solarsys` | `DOKPLOY_PROD_WEBHOOK_URL` | `PROD_URL` |
+| Preprod | `dev` | `ghcr.io/t3hx/solarsys-react-app:preprod` (+ `dev-<sha>`) | `solarsys-preprod` | `DOKPLOY_PREPROD_WEBHOOK_URL` | `PREPROD_URL` |
+| Prod | `main` | `ghcr.io/t3hx/solarsys-react-app:latest` (+ `vX.Y.Z`, `main-<sha>`) | `solarsys` | `DOKPLOY_PROD_WEBHOOK_URL` | `PROD_URL` |
 
 L'app est entièrement statique : **aucun secret runtime**, la même image sert les deux
 environnements. L'image finale est `nginxinc/nginx-unprivileged` (non-root) qui sert `dist/`
@@ -73,7 +73,7 @@ domaine et le webhook changent) :
 1. Le package ghcr doit être **public** (page du package → Package settings → Danger Zone →
    Change visibility → Public). Sinon, renseigner un PAT `read:packages` dans Dokploy.
 2. Dans Dokploy : **Create Service → Application**, nommer (`solarsys` / `solarsys-preprod`).
-3. Provider **Docker** → image `ghcr.io/t3hx/solarsys-app:latest` (prod) ou `:preprod`
+3. Provider **Docker** → image `ghcr.io/t3hx/solarsys-react-app:latest` (prod) ou `:preprod`
    (preprod). Pas de credentials (package public).
 4. Onglet **Advanced** → Container Port : `8080`. Healthcheck sur `/` si le formulaire
    existe dans la version de Dokploy.
@@ -92,7 +92,7 @@ domaine et le webhook changent) :
 - **`deploy-*` rouge « never served »** : le webhook a répondu mais rien n'est en ligne —
   regarder les logs de déploiement dans Dokploy (pull de l'image, démarrage du conteneur).
 - **Dokploy ne pull pas l'image** : vérifier que le package ghcr est public et que le tag
-  existe (`docker manifest inspect ghcr.io/t3hx/solarsys-app:preprod`).
+  existe (`docker manifest inspect ghcr.io/t3hx/solarsys-react-app:preprod`).
 - **Rollback prod** : dans Dokploy, remplacer le tag `latest` par le `vX.Y.Z` voulu et
   Deploy ; revenir à `latest` une fois le correctif mergé.
 - **Merge sur `main` sans Release publiée** : le déploiement a échoué (c'est voulu : pas de

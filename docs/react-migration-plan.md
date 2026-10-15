@@ -8,7 +8,7 @@ Date : 2026-09-05, mis à jour le 2026-09-07 avec les décisions ci-dessous. Ce 
 |-------|----------|
 | Dépôts | Le dépôt Vue est renommé **`t3hx/solarsys-app-vue`** (gelé, aucun correctif B1–B13). Le nouveau dépôt **`t3hx/solarsys-app`** est créé, vide. Le `origin` du clone local Vue a été repointé vers `solarsys-app-vue`. |
 | Nom du produit | **`solarsys`** remplace « Celestial Walker » partout : titre de page, préloader, drawer, cartouche, fenêtre À propos, textes du tutoriel, cookie (`solarsys_tutorial_seen`). |
-| Image Docker | **`ghcr.io/t3hx/solarsys-app`**, taguée `latest` sur `main` + sha. |
+| Image Docker | **`ghcr.io/t3hx/solarsys-react-app`**, taguée `latest` sur `main` + sha. |
 | Production | L'app n'a jamais été déployée : la phase 9 inclut la création de l'application Dokploy, le domaine, les identifiants ghcr et le premier déploiement. |
 | Caméra | `CameraControls` de drei (D3) validé. Résultat du prototype (phase 4, 2026-09-07) : CameraControls pour les entrées utilisateur et le suivi (`moveTo` par frame) ; les transitions scriptées (focus 1,5 s, tactique 2 s, reset) restent des tweens GSAP `power3.inOut` appliqués via `setLookAt(…, false)`, car l'événement `rest` de camera-controls arrive plusieurs secondes après la fin visuelle. |
 | Ombres | **Supprimées** (pas de `castShadow`, pas d'option). |
@@ -307,7 +307,7 @@ Retours utilisateur après la phase 8 :
 Branche `ci/deploy-and-docs`.
 - Playwright : chargement, clic planète, focus, ouverture info, changement de langue, vue tactique.
 - Docs : README (EN), `DEV_GUIDE.md` (FR) réécrit pour R3F, `CLAUDE.md`.
-- Première mise en production (l'app n'a jamais été déployée) : application Dokploy de type image Docker pointant sur `ghcr.io/t3hx/solarsys-app:latest`, identifiants ghcr (token lecture packages) saisis dans Dokploy, domaine + certificat, healthcheck sur `/`, webhook Dokploy appelé par le job `deploy` de la CI sur `main`. Aucun secret applicatif n'est nécessaire côté runtime (app statique) ; le webhook Dokploy est un secret GitHub Actions.
+- Première mise en production (l'app n'a jamais été déployée) : application Dokploy de type image Docker pointant sur `ghcr.io/t3hx/solarsys-react-app:latest`, identifiants ghcr (token lecture packages) saisis dans Dokploy, domaine + certificat, healthcheck sur `/`, webhook Dokploy appelé par le job `deploy` de la CI sur `main`. Aucun secret applicatif n'est nécessaire côté runtime (app statique) ; le webhook Dokploy est un secret GitHub Actions.
 - Archivage du dépôt `solarsys-app-vue` sur GitHub une fois la prod validée.
 
 ---
