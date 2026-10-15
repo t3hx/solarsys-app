@@ -88,7 +88,7 @@ Sous-ensemble Iconify embarqué (hors ligne) : ajouter le nom de l'icône dans
   `pr-checks.yml`). Conventional Commits, en anglais — le titre de PR aussi (vérifié).
 - **Déploiement entièrement automatique**, deux environnements — la référence complète est
   [`docs/deployment.md`](docs/deployment.md) :
-  - push `dev` → CI (quality + e2e) → image `ghcr.io/t3hx/solarsys-app:preprod` → webhook →
+  - push `dev` → CI (quality + e2e) → image `ghcr.io/t3hx/solarsys-react-app:preprod` → webhook →
     app Dokploy **preprod** ;
   - merge `dev → main` → CI → version calculée (première release : `v1.0.0`) → image
     `:latest` + `:vX.Y.Z` → webhook → app Dokploy **prod** → vérification que la prod sert
