@@ -226,19 +226,25 @@ jobs:
             exit 1
           fi
           curl --fail --silent --show-error -X POST "$WEBHOOK_URL"
+      # ~ Verification a l'ORIGINE, par le tailnet : Cloudflare (proxy public de la prod)
+      # ~ repond 403 aux IPs de datacenter des runners (anti-bot). On interroge donc
+      # ~ directement Traefik sur le VPS (HTTP port 80, celui que le tunnel utilise),
+      # ~ ce qui prouve ce que Dokploy sert reellement.
       - name: Wait until production serves ${{ needs.version.outputs.tag }}
         env:
           BASE_URL: ${{ vars.PROD_URL }}
+          ORIGIN_IP: ${{ vars.VPS_TAILSCALE_IP }}
         run: |
-          if [ -z "$BASE_URL" ]; then
-            echo "::error::PROD_URL repository variable is not set: cannot prove the deploy happened."
+          if [ -z "$BASE_URL" ] || [ -z "$ORIGIN_IP" ]; then
+            echo "::error::PROD_URL or VPS_TAILSCALE_IP repository variable is not set: cannot prove the deploy happened."
             exit 1
           fi
+          host="${BASE_URL#https://}"
           expected="${{ needs.version.outputs.tag }}"
           for i in $(seq 1 30); do
-            live=$(curl -fsS --max-time 10 "$BASE_URL/version.json" | jq -r '.version' 2>/dev/null || echo "")
+            live=$(curl -fsS --max-time 10 --resolve "$host:80:$ORIGIN_IP" "http://$host/version.json" | jq -r '.version' 2>/dev/null || echo "")
             if [ "$live" = "$expected" ]; then
-              echo "Production serves $expected."
+              echo "Production origin serves $expected."
               exit 0
             fi
             echo "Attempt $i/30: live='$live', expected='$expected'. Retrying in 10 s..."
