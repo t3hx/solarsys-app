@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { allBodies } from '@/data/lookup'
 import type { SolarSystem } from '@/data/model'
+import { formatAppVersion } from '@/hud/drawer/appVersion'
 import { BodiesAccordion } from '@/hud/drawer/BodiesAccordion'
 import styles from '@/hud/drawer/DrawerMenu.module.css'
 import type { Box } from '@/hud/hudLayout'
@@ -293,7 +294,7 @@ function Cartouche() {
           fill="var(--color-hud)"
           textAnchor="middle"
         >
-          v{__APP_VERSION__}
+          {formatAppVersion(__APP_VERSION__)}
         </text>
         <line
           x1={280}
