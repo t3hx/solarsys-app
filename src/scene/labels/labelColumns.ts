@@ -1,8 +1,8 @@
 /**
  * @module scene/labels/labelColumns
  * @description Repartition des etiquettes tactiques en deux colonnes fixes : la moitie la
- * plus proche du Soleil a gauche, lue de haut en bas ; la moitie la plus lointaine a
- * droite, remontant de bas en haut (le plus lointain finit en haut a droite). La bande
+ * plus proche du Soleil a gauche, la moitie la plus lointaine a droite, chacune lue de
+ * haut en bas (le plus lointain finit donc en bas a droite). La bande
  * verticale evite les decorations des coins du HUD. Positions en pixels, proportionnelles
  * a la taille de la fenetre. Pur.
  */
@@ -34,8 +34,11 @@ export function labelColumns(count: number, width: number, height: number): Colu
       // ~ Moitie proche : colonne gauche, de haut en bas
       return { side: 'left', x: width * COLUMN_X, y: slotY(index, leftCount) } as const
     }
-    // ~ Moitie lointaine : colonne droite, de bas en haut
-    const row = rightCount - 1 - (index - leftCount)
-    return { side: 'right', x: width * (1 - COLUMN_X), y: slotY(row, rightCount) } as const
+    // ~ Moitie lointaine : colonne droite, de haut en bas
+    return {
+      side: 'right',
+      x: width * (1 - COLUMN_X),
+      y: slotY(index - leftCount, rightCount),
+    } as const
   })
 }

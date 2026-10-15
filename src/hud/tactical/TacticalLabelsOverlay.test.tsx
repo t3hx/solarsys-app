@@ -21,12 +21,15 @@ describe('TacticalLabelsOverlay', () => {
     expect(store().selectedId).toBe('earth')
   })
 
-  it('hovers the body under the pointer', () => {
+  it('hovers the body under the pointer and marks its label', () => {
     store().setTactical(true)
     render(<TacticalLabelsOverlay system={solarSystemFixture} />)
-    fireEvent.mouseEnter(screen.getByRole('button', { name: 'MARS' }))
+    const mars = screen.getByRole('button', { name: 'MARS' })
+    fireEvent.mouseEnter(mars)
     expect(store().hoveredId).toBe('mars')
-    fireEvent.mouseLeave(screen.getByRole('button', { name: 'MARS' }))
+    expect(mars).toHaveAttribute('data-hovered', 'true')
+    fireEvent.mouseLeave(mars)
     expect(store().hoveredId).toBeNull()
+    expect(mars).not.toHaveAttribute('data-hovered')
   })
 })

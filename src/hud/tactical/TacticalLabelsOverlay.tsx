@@ -21,6 +21,7 @@ import { useInteractionStore } from '@/store/interaction'
 
 export function TacticalLabelsOverlay({ system }: { system: SolarSystem }) {
   const isTactical = useInteractionStore((state) => state.isTactical)
+  const hoveredId = useInteractionStore((state) => state.hoveredId)
   // * Re-rendu au changement de langue
   useTranslation()
   const { width, height } = useWindowSize()
@@ -65,9 +66,12 @@ export function TacticalLabelsOverlay({ system }: { system: SolarSystem }) {
       {bodies.map((body, index) => {
         const slot = slots[index]
         const color = tacticalColors[body.id] ?? colors.white
+        const active = hoveredId === body.id
+        const dimmed = hoveredId !== null && !active
         return (
           <div
             key={body.id}
+            className={`${styles.label} ${active ? styles.labelActive : ''} ${dimmed ? styles.labelDimmed : ''}`}
             style={{ color }}
           >
             <div
@@ -92,6 +96,7 @@ export function TacticalLabelsOverlay({ system }: { system: SolarSystem }) {
               type="button"
               className={`${styles.box} ${slot.side === 'left' ? styles.boxLeft : styles.boxRight}`}
               style={{ left: slot.x, top: slot.y, borderColor: color }}
+              data-hovered={active || undefined}
               onClick={() => useInteractionStore.getState().select(body.id)}
               onMouseEnter={() => useInteractionStore.getState().hover(body.id)}
               onMouseLeave={() => useInteractionStore.getState().hover(null)}

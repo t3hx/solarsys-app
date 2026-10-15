@@ -14,12 +14,11 @@ describe('labelColumns', () => {
     expect(slots.slice(7).every((slot) => slot.side === 'right')).toBe(true)
   })
 
-  it('reads top-to-bottom on the left and bottom-to-top on the right', () => {
+  it('reads top-to-bottom on both columns (farthest ends bottom right)', () => {
     const leftYs = slots.slice(0, 7).map((slot) => slot.y)
     expect(leftYs).toEqual([...leftYs].sort((a, b) => a - b))
-    // * A droite, la distance croissante remonte : y decroissant
     const rightYs = slots.slice(7).map((slot) => slot.y)
-    expect(rightYs).toEqual([...rightYs].sort((a, b) => b - a))
+    expect(rightYs).toEqual([...rightYs].sort((a, b) => a - b))
   })
 
   it('anchors the columns on each side, proportionally to the window', () => {
