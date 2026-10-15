@@ -46,4 +46,4 @@ Source textures keep their full resolution: every body can be zoomed to its surf
 
 ## Deployment
 
-`push main` → GitHub Actions (`.github/workflows/ci.yml`) → image `ghcr.io/t3hx/solarsys-app` → Dokploy webhook (`DOKPLOY_WEBHOOK_URL` repository secret). Runtime image is `nginxinc/nginx-unprivileged` serving `dist/` on port 8080 (non-root). No runtime secrets; the app is static.
+Reference: `docs/deployment.md` (frozen standard — do not renegotiate it). Two environments, fully automatic: push `dev` → CI → image `ghcr.io/t3hx/solarsys-app:preprod` → Dokploy preprod; merge `dev → main` → CI → auto semver tag `vX.Y.Z` from Conventional Commits + GitHub Release → image `:latest` + `:vX.Y.Z` → Dokploy prod. Webhook secrets `DOKPLOY_PREPROD_WEBHOOK_URL` / `DOKPLOY_PROD_WEBHOOK_URL`. Runtime image is `nginxinc/nginx-unprivileged` serving `dist/` on port 8080 (non-root). No runtime secrets; the app is static.

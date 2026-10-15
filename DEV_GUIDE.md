@@ -84,9 +84,15 @@ Sous-ensemble Iconify embarqué (hors ligne) : ajouter le nom de l'icône dans
 ## Branches et CI/CD
 
 - Branches `feat/*`, `fix/*`, `perf/*`, `ci/*`… tirées de `dev` ; squash merge dans `dev` ;
-  `dev → main` par merge simple. Conventional Commits, en anglais.
-- **Pousser `main` déploie** : lint → typecheck → tests → build → e2e → image Docker
-  multi-stage poussée sur `ghcr.io/t3hx/solarsys-app` → webhook Dokploy qui redéploie le VPS
-  (secret `DOKPLOY_WEBHOOK_URL` du repo GitHub). L'image d'exécution est
-  `nginxinc/nginx-unprivileged` et sert `dist/` statique sur le port 8080 (non-root), sans
-  aucun secret applicatif.
+  `dev → main` par merge simple (seule `dev` est acceptée vers `main`, vérifié par
+  `pr-checks.yml`). Conventional Commits, en anglais — le titre de PR aussi (vérifié).
+- **Déploiement entièrement automatique**, deux environnements — la référence complète est
+  [`docs/deployment.md`](docs/deployment.md) :
+  - push `dev` → CI (quality + e2e) → image `ghcr.io/t3hx/solarsys-app:preprod` → webhook →
+    app Dokploy **preprod** ;
+  - merge `dev → main` → CI → version calculée (première release : `v1.0.0`) → image
+    `:latest` + `:vX.Y.Z` → webhook → app Dokploy **prod** → vérification que la prod sert
+    bien la version (`/version.json`) → tag git + GitHub Release **seulement après cette
+    preuve**.
+    L'image d'exécution est `nginxinc/nginx-unprivileged` et sert `dist/` statique sur le
+    port 8080 (non-root), sans aucun secret applicatif.
