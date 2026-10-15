@@ -35,7 +35,7 @@ export function BrandMark({ margin, seBox }: BrandMarkProps) {
       className={styles.brandMark}
       src="/solarsys-logo.png"
       alt="solarsys logo"
-      style={{ width: size, height: size, right: offset, bottom: offset }}
+      style={{ width: size, height: 'auto', right: offset, bottom: offset }}
     />
   )
 }
