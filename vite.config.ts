@@ -6,7 +6,8 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.0.0'),
+    // ~ Injectee par le pipeline : v1.0.0 (prod), dev-<sha> (preprod), dev (local)
+    __APP_VERSION__: JSON.stringify(process.env.APP_VERSION ?? 'dev'),
   },
   plugins: [react(), tailwindcss()],
   resolve: {

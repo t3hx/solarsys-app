@@ -12,10 +12,12 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 
 COPY . .
-RUN pnpm build
 
-# ~ Preuve de version : la CI compare /version.json au tag attendu apres deploiement
+# ~ Version du build (v1.0.0 en prod, dev-<sha> en preprod) : affichee dans le cartouche
+# ~ du drawer via Vite, et ecrite dans /version.json que la CI compare apres deploiement
 ARG APP_VERSION=dev
+ENV APP_VERSION=$APP_VERSION
+RUN pnpm build
 RUN printf '{"version":"%s"}\n' "$APP_VERSION" > dist/version.json
 
 # ~ Etape 2 : image finale minimale, nginx sans privileges (utilisateur non-root, port 8080)
