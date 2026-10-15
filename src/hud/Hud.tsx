@@ -25,10 +25,8 @@ import { useCameraStore } from '@/store/camera'
 export function Hud({ system }: { system: SolarSystem }) {
   const { t } = useTranslation()
   const { width, height, devicePixelRatio } = useWindowSize()
-  const layout = useMemo(
-    () => hudLayout(width, height, hudScale(height, devicePixelRatio)),
-    [width, height, devicePixelRatio],
-  )
+  const frameScale = hudScale(height, devicePixelRatio)
+  const layout = useMemo(() => hudLayout(width, height, frameScale), [width, height, frameScale])
   const controlsScale = uiScale(height, devicePixelRatio)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const zoomLevel = useCameraStore((state) => state.zoomLevel)
@@ -64,8 +62,7 @@ export function Hud({ system }: { system: SolarSystem }) {
       <CornerSE box={layout.se} />
       <BrandMark
         margin={layout.margin}
-        seBox={layout.se}
-        scale={controlsScale}
+        scale={frameScale}
       />
       <ZoomIndicator
         box={layout.zoom}

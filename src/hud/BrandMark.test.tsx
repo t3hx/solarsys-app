@@ -3,16 +3,10 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { BrandMark } from '@/hud/BrandMark'
 import { useAppStore } from '@/store/app'
 
-const layout = {
-  margin: 16,
-  se: { x: 1700, y: 900, width: 200, height: 180 },
-}
-
 function renderMark() {
   render(
     <BrandMark
-      margin={layout.margin}
-      seBox={layout.se}
+      margin={16}
       scale={1}
     />,
   )
