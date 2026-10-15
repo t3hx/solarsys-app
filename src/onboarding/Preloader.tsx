@@ -49,7 +49,11 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
       className={styles.screen}
     >
       <div className={styles.content}>
-        <p className={styles.title}>SOLARSYS</p>
+        <img
+          className={styles.logo}
+          src="/solarsys-logo-title.png"
+          alt="solarsys"
+        />
         <div
           className={styles.progress}
           role="progressbar"

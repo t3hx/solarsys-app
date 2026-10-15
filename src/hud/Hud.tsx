@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SolarSystem } from '@/data/model'
+import { BrandMark } from '@/hud/BrandMark'
 import { CornerNE } from '@/hud/corners/CornerNE'
 import { CornerNW } from '@/hud/corners/CornerNW'
 import { CornerSE } from '@/hud/corners/CornerSE'
@@ -61,6 +62,11 @@ export function Hud({ system }: { system: SolarSystem }) {
         system={system}
       />
       <CornerSE box={layout.se} />
+      <BrandMark
+        margin={layout.margin}
+        seBox={layout.se}
+        scale={controlsScale}
+      />
       <ZoomIndicator
         box={layout.zoom}
         level={zoomLevel}

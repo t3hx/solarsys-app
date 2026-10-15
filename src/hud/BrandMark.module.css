@@ -1,0 +1,8 @@
+.brandMark {
+  position: fixed;
+  z-index: 900;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 10px var(--color-hud-shadow));
+}

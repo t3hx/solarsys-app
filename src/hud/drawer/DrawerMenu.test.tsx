@@ -33,6 +33,13 @@ describe('DrawerMenu', () => {
     expect(within(drawer).getByRole('button', { name: /about/i })).toBeInTheDocument()
   })
 
+  it('shows the title logo in the home header', () => {
+    renderDrawer()
+    const drawer = screen.getByRole('complementary', { name: /menu/i })
+    const logo = within(drawer).getByRole('img', { name: /solarsys/i })
+    expect(logo).toHaveAttribute('src', '/solarsys-logo-title.png')
+  })
+
   it('closes from the close button', () => {
     const onClose = renderDrawer()
     fireEvent.click(screen.getByRole('button', { name: /close/i }))

@@ -74,43 +74,11 @@ function HomeView({ onOptions, onAbout }: { onOptions: () => void; onAbout: () =
   return (
     <>
       <div className={styles.homeTitle}>
-        <svg
-          className={styles.homeTitleSvg}
-          viewBox="0 0 400 48"
-          aria-hidden="true"
-        >
-          <line
-            x1={0}
-            y1={24}
-            x2={16}
-            y2={24}
-            stroke="var(--color-hud)"
-            strokeWidth={1}
-            opacity={0.4}
-          />
-          <polygon
-            points="16,20 22,24 16,28"
-            fill="var(--color-hud)"
-            opacity={0.5}
-          />
-          <text
-            x={30}
-            y={32}
-            className={styles.homeTitleText}
-            fill="white"
-          >
-            {PRODUCT_NAME}
-          </text>
-          <line
-            x1={240}
-            y1={24}
-            x2={400}
-            y2={24}
-            stroke="var(--color-hud)"
-            strokeWidth={0.5}
-            opacity={0.2}
-          />
-        </svg>
+        <img
+          className={styles.homeTitleLogo}
+          src="/solarsys-logo-title.png"
+          alt={PRODUCT_NAME.toLowerCase()}
+        />
       </div>
       <nav className={styles.navLinks}>
         <button
