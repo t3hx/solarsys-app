@@ -7,12 +7,10 @@ import styles from '@/hud/corners/corners.module.css'
 import type { Box } from '@/hud/hudLayout'
 import { cornerSizes } from '@/hud/hudLayout'
 
-const LETTERS = [
-  ['M', 40],
-  ['E', 40],
-  ['N', 41],
-  ['U', 39],
-] as const
+// ~ Axe vertical du bandeau (x = 40 sur toute la zone des lettres) : avec
+// ~ text-anchor: middle, chaque lettre se centre dessus, sans compensation manuelle
+const LETTERS = ['M', 'E', 'N', 'U'] as const
+const LETTER_AXIS_X = 40
 
 export function CornerNW({ box, onClick }: { box: Box; onClick: () => void }) {
   const { t } = useTranslation()
@@ -49,10 +47,10 @@ export function CornerNW({ box, onClick }: { box: Box; onClick: () => void }) {
         y={86}
         aria-hidden="true"
       >
-        {LETTERS.map(([letter, x]) => (
+        {LETTERS.map((letter) => (
           <tspan
             key={letter}
-            x={x}
+            x={LETTER_AXIS_X}
             dy="1.2em"
           >
             {letter}
