@@ -49,7 +49,7 @@ export function App() {
       {data.status === 'error' && (
         <p
           role="alert"
-          className="fixed bottom-4 left-4 z-[3000] font-mono text-sm text-red-400"
+          className="fixed bottom-4 left-4 z-3000 font-mono text-sm text-red-400"
         >
           Failed to load solar system data: {data.message}
         </p>

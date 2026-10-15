@@ -7,8 +7,6 @@
  * dans le nouveau repere, obtenu par rotation d'angle `tilt` autour de l'axe X (ligne des
  * noeuds du nouveau plan). On lit ensuite (i', Ω') sur la normale transformee.
  *
- * Note : la version Vue (utils/coordinateConversion.ts) avait le signe de la composante
- * `x` inverse, ce qui renvoyait Ω' = 180° - Ω pour un plan non incline (audit B14).
  */
 
 export interface ReferencePlaneElements {
