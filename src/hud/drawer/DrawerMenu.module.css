@@ -62,17 +62,10 @@
   border-bottom: 1px solid var(--color-hud);
 }
 
-.homeTitleSvg {
+.homeTitleLogo {
+  display: block;
   width: 100%;
-  max-width: 400px;
   height: auto;
-}
-
-.homeTitleText {
-  font-family: system-ui, sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.35em;
 }
 
 .navLinks {

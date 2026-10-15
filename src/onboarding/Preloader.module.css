@@ -19,13 +19,9 @@
   padding: 0 24px;
 }
 
-.title {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.4em;
-  color: var(--color-hud);
-  text-shadow: 0 0 20px var(--color-hud-shadow);
-  margin: 0;
+.logo {
+  width: min(320px, 70vw);
+  height: auto;
 }
 
 .progress {

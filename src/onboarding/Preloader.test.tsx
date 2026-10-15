@@ -18,6 +18,13 @@ describe('Preloader', () => {
     progress.value = { progress: 0, loaded: 0, total: 0, active: true }
   })
 
+  it('shows the title logo instead of the plain product name', () => {
+    render(<Preloader onComplete={() => undefined} />)
+    const logo = screen.getByRole('img', { name: /solarsys/i })
+    expect(logo).toHaveAttribute('src', '/solarsys-logo-title.png')
+    expect(screen.queryByText('SOLARSYS')).not.toBeInTheDocument()
+  })
+
   it('shows the texture counter and the loading state', () => {
     progress.value = { progress: 50, loaded: 11, total: 22, active: true }
     render(<Preloader onComplete={() => undefined} />)

@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SolarSystem } from '@/data/model'
+import { BrandMark } from '@/hud/BrandMark'
 import { CornerNE } from '@/hud/corners/CornerNE'
 import { CornerNW } from '@/hud/corners/CornerNW'
 import { CornerSE } from '@/hud/corners/CornerSE'
@@ -24,10 +25,8 @@ import { useCameraStore } from '@/store/camera'
 export function Hud({ system }: { system: SolarSystem }) {
   const { t } = useTranslation()
   const { width, height, devicePixelRatio } = useWindowSize()
-  const layout = useMemo(
-    () => hudLayout(width, height, hudScale(height, devicePixelRatio)),
-    [width, height, devicePixelRatio],
-  )
+  const frameScale = hudScale(height, devicePixelRatio)
+  const layout = useMemo(() => hudLayout(width, height, frameScale), [width, height, frameScale])
   const controlsScale = uiScale(height, devicePixelRatio)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const zoomLevel = useCameraStore((state) => state.zoomLevel)
@@ -61,6 +60,10 @@ export function Hud({ system }: { system: SolarSystem }) {
         system={system}
       />
       <CornerSE box={layout.se} />
+      <BrandMark
+        margin={layout.margin}
+        seBox={layout.se}
+      />
       <ZoomIndicator
         box={layout.zoom}
         level={zoomLevel}
