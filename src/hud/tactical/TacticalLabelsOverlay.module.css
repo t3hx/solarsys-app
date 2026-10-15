@@ -1,0 +1,152 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  /* ~ Sous le cadre HUD (z 10) mais au-dessus du canvas ; seules les boites sont cliquables */
+  pointer-events: none;
+  user-select: none;
+  animation: fadeIn 0.35s ease;
+  font-family: system-ui, sans-serif;
+}
+
+/* ~ Tige : part de l'ancre de la boite, longueur et angle poses par frame en inline */
+.leader {
+  position: absolute;
+  height: 1.5px;
+  transform-origin: left center;
+  opacity: 0.85;
+}
+
+/* ~ Reticule : ancre positionnee par frame sur le corps, anneaux animes en CSS */
+.reticleAnchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.label {
+  transition: opacity 0.2s ease;
+}
+
+/* ~ Survol (etiquette ou ligne d'orbite) : le corps vise flamboie, les autres s'effacent */
+.labelDimmed {
+  opacity: 0.35;
+}
+
+.labelActive .leader {
+  height: 2.5px;
+  opacity: 1;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.labelActive .box {
+  background: rgba(0, 0, 0, 0.92);
+  box-shadow:
+    0 0 16px currentColor,
+    0 0 42px currentColor,
+    inset 0 0 14px color-mix(in srgb, currentColor 35%, transparent);
+  text-shadow: 0 0 10px currentColor;
+}
+
+.labelActive .reticle {
+  border-style: solid;
+  scale: 1.25;
+  animation-duration: 2.2s;
+  filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 22px currentColor);
+}
+
+.reticle {
+  position: absolute;
+  width: clamp(16px, 0.9vw + 0.9vh, 32px);
+  height: clamp(16px, 0.9vw + 0.9vh, 32px);
+  translate: -50% -50%;
+  border: 1.5px dashed currentColor;
+  border-radius: 50%;
+  animation: spin 7s linear infinite;
+  filter: drop-shadow(0 0 6px currentColor);
+  transition:
+    scale 0.2s ease,
+    filter 0.2s ease;
+}
+
+.reticleDot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* ~ Boite : taille et texte proportionnels a la fenetre (clamp vw/vh), cliquable */
+.box {
+  position: absolute;
+  pointer-events: auto;
+  padding: 0.4em 0.9em;
+  border: 2px solid;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-family: inherit;
+  font-size: clamp(13px, 0.55vw + 0.9vh, 26px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.box:hover,
+.box:focus-visible {
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 14px currentColor;
+}
+
+/* ~ Colonne gauche : la boite s'etend a gauche de son ancre */
+.boxLeft {
+  transform: translate(-100%, -50%);
+}
+
+.boxRight {
+  transform: translate(0, -50%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .reticle,
+  .reticleDot {
+    animation: none;
+  }
+}

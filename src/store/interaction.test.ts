@@ -109,3 +109,37 @@ describe('interaction store — re-selecting the selected body', () => {
     expect(store().isTactical).toBe(false)
   })
 })
+
+describe('interaction store — tactical readiness (end of the camera transition)', () => {
+  beforeEach(() => store().reset())
+
+  it('is not ready while the tactical transition runs', () => {
+    store().toggleTactical()
+    expect(store().isTactical).toBe(true)
+    expect(store().tacticalReady).toBe(false)
+  })
+
+  it('becomes ready when the camera transition completes', () => {
+    store().toggleTactical()
+    store().setTacticalReady(true)
+    expect(store().tacticalReady).toBe(true)
+  })
+
+  it('ignores readiness outside tactical view', () => {
+    store().setTacticalReady(true)
+    expect(store().tacticalReady).toBe(false)
+  })
+
+  it('drops readiness when leaving tactical view, by toggle or selection', () => {
+    store().toggleTactical()
+    store().setTacticalReady(true)
+    store().toggleTactical()
+    expect(store().tacticalReady).toBe(false)
+
+    store().toggleTactical()
+    store().setTacticalReady(true)
+    store().select('earth')
+    expect(store().isTactical).toBe(false)
+    expect(store().tacticalReady).toBe(false)
+  })
+})

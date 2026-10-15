@@ -9,6 +9,7 @@ import { CameraRig } from '@/scene/camera/CameraRig'
 import { SceneStatsProbe } from '@/scene/debug/SceneStatsProbe'
 import { Effects } from '@/scene/effects/Effects'
 import { CursorFeedback } from '@/scene/interaction/CursorFeedback'
+import { TacticalLabels } from '@/scene/labels/TacticalLabels'
 import { SceneReadyMarker } from '@/scene/SceneReadyMarker'
 import { SimulationDriver } from '@/scene/simulation/SimulationDriver'
 import { SolarSystem } from '@/scene/SolarSystem'
@@ -23,6 +24,7 @@ export function SceneContents({ system }: { system: SolarSystemModel }) {
       />
       <Starfield {...starfieldConfig} />
       <SolarSystem system={system} />
+      <TacticalLabels system={system} />
       <SceneStatsProbe />
       <SimulationDriver />
       <CameraRig />

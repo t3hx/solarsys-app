@@ -82,7 +82,12 @@ test('the tactical view toggles from its corner button and Space exits it', asyn
   await tacticalButton.click()
   await expect(tacticalButton).toHaveAttribute('aria-pressed', 'true')
 
+  // * Les etiquettes colorees des corps n'existent qu'en vue tactique
+  await expect(page.getByText('MARS', { exact: true })).toBeVisible()
+  await expect(page.getByText('NEPTUNE', { exact: true })).toBeVisible()
+
   // * La montee dure 2 s ; Espace restaure ensuite la vue precedente
   await page.keyboard.press('Space')
   await expect(tacticalButton).toHaveAttribute('aria-pressed', 'false', { timeout: 10_000 })
+  await expect(page.getByText('MARS', { exact: true })).toBeHidden()
 })

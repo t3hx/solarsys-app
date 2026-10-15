@@ -182,7 +182,9 @@ export function CameraRig() {
         wasFollowing: state.selectedId !== null,
         selectedId: state.selectedId,
       }
-      transitionTo(tacticalPlacement, tacticalViewConfig.transitionDuration, () => undefined)
+      transitionTo(tacticalPlacement, tacticalViewConfig.transitionDuration, () =>
+        useInteractionStore.getState().setTacticalReady(true),
+      )
       return
     }
 
