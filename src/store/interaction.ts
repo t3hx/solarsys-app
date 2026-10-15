@@ -11,6 +11,9 @@
  * - le suivi n'est actif que si un corps est selectionne (bascule par CameraRig en fin
  *   d'animation de focus) ;
  * - entrer en vue tactique suspend le suivi, CameraRig le restaure a la sortie ;
+ * - `tacticalReady` ne devient vrai qu'a la fin de la transition camera (pose par
+ *   CameraRig) et retombe des qu'on quitte la vue tactique : les habillages tactiques
+ *   (couleurs, etiquettes) n'apparaissent qu'une fois la vue en place ;
  * - la fenetre d'information n'existe que pour un corps selectionne ; elle et la fenetre
  *   « a propos » s'excluent mutuellement, et selectionner un corps ferme « a propos ».
  */
@@ -21,12 +24,15 @@ export interface InteractionState {
   selectedId: string | null
   isFollowing: boolean
   isTactical: boolean
+  /** Vrai une fois la transition camera de la vue tactique terminee */
+  tacticalReady: boolean
   infoOpen: boolean
   aboutOpen: boolean
   hover: (id: string | null) => void
   select: (id: string | null) => void
   setFollowing: (following: boolean) => void
   setTactical: (tactical: boolean) => void
+  setTacticalReady: (ready: boolean) => void
   toggleTactical: () => void
   setInfoOpen: (open: boolean) => void
   setAboutOpen: (open: boolean) => void
@@ -38,6 +44,7 @@ const initialState = {
   selectedId: null,
   isFollowing: false,
   isTactical: false,
+  tacticalReady: false,
   infoOpen: false,
   aboutOpen: false,
 }
@@ -50,7 +57,7 @@ export const useInteractionStore = create<InteractionState>()((set, get) => ({
   },
   select: (id) => {
     if (id !== null && id === get().selectedId) {
-      if (get().isTactical) set({ isTactical: false })
+      if (get().isTactical) set({ isTactical: false, tacticalReady: false })
       return
     }
     set({
@@ -58,6 +65,7 @@ export const useInteractionStore = create<InteractionState>()((set, get) => ({
       hoveredId: null,
       isFollowing: false,
       isTactical: false,
+      tacticalReady: false,
       infoOpen: false,
       aboutOpen: false,
     })
@@ -66,10 +74,16 @@ export const useInteractionStore = create<InteractionState>()((set, get) => ({
     if (following && get().selectedId === null) return
     set({ isFollowing: following })
   },
-  setTactical: (tactical) => set({ isTactical: tactical }),
+  setTactical: (tactical) => set({ isTactical: tactical, tacticalReady: false }),
+  setTacticalReady: (ready) => {
+    if (ready && !get().isTactical) return
+    set({ tacticalReady: ready })
+  },
   toggleTactical: () =>
     set((state) =>
-      state.isTactical ? { isTactical: false } : { isTactical: true, isFollowing: false },
+      state.isTactical
+        ? { isTactical: false, tacticalReady: false }
+        : { isTactical: true, tacticalReady: false, isFollowing: false },
     ),
   setInfoOpen: (open) => {
     if (open && get().selectedId === null) return

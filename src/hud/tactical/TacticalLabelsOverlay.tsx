@@ -20,7 +20,7 @@ import { labelScreenPositions } from '@/scene/labels/labelScreenPositions'
 import { useInteractionStore } from '@/store/interaction'
 
 export function TacticalLabelsOverlay({ system }: { system: SolarSystem }) {
-  const isTactical = useInteractionStore((state) => state.isTactical)
+  const isTactical = useInteractionStore((state) => state.isTactical && state.tacticalReady)
   const hoveredId = useInteractionStore((state) => state.hoveredId)
   // * Re-rendu au changement de langue
   useTranslation()

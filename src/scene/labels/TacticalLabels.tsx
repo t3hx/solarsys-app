@@ -16,7 +16,7 @@ import { useInteractionStore } from '@/store/interaction'
 const world = new Vector3()
 
 export function TacticalLabels({ system }: { system: SolarSystem }) {
-  const isTactical = useInteractionStore((state) => state.isTactical)
+  const isTactical = useInteractionStore((state) => state.isTactical && state.tacticalReady)
   const registry = useRegistry()
   const { width, height } = useThree((state) => state.size)
 

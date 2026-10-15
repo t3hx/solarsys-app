@@ -14,8 +14,15 @@ describe('TacticalLabelsOverlay', () => {
     expect(screen.queryByRole('button', { name: 'EARTH' })).not.toBeInTheDocument()
   })
 
+  it('stays hidden while the tactical camera transition runs', () => {
+    store().setTactical(true)
+    render(<TacticalLabelsOverlay system={solarSystemFixture} />)
+    expect(screen.queryByRole('button', { name: 'EARTH' })).not.toBeInTheDocument()
+  })
+
   it('selects a body when its label is clicked, like an orbit line', () => {
     store().setTactical(true)
+    store().setTacticalReady(true)
     render(<TacticalLabelsOverlay system={solarSystemFixture} />)
     fireEvent.click(screen.getByRole('button', { name: 'EARTH' }))
     expect(store().selectedId).toBe('earth')
@@ -23,6 +30,7 @@ describe('TacticalLabelsOverlay', () => {
 
   it('hovers the body under the pointer and marks its label', () => {
     store().setTactical(true)
+    store().setTacticalReady(true)
     render(<TacticalLabelsOverlay system={solarSystemFixture} />)
     const mars = screen.getByRole('button', { name: 'MARS' })
     fireEvent.mouseEnter(mars)

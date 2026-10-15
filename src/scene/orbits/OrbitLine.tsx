@@ -65,11 +65,12 @@ export function OrbitLine({
   const appearance = useInteractionStore(
     useShallow((state) => {
       const target = outlineTarget(state)
+      const tacticalSettled = state.isTactical && state.tacticalReady
       return orbitAppearance(
         bodyId,
         target?.id === bodyId ? target.kind : null,
-        state.isTactical,
-        state.isTactical ? state.hoveredId : null,
+        tacticalSettled,
+        tacticalSettled ? state.hoveredId : null,
       )
     }),
   )
