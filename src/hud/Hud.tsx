@@ -62,7 +62,7 @@ export function Hud({ system }: { system: SolarSystem }) {
       <CornerSE box={layout.se} />
       <BrandMark
         margin={layout.margin}
-        scale={frameScale}
+        seBox={layout.se}
       />
       <ZoomIndicator
         box={layout.zoom}

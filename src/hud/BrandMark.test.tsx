@@ -7,7 +7,7 @@ function renderMark() {
   render(
     <BrandMark
       margin={16}
-      scale={1}
+      seBox={{ x: 1700, y: 900, width: 130, height: 124 }}
     />,
   )
 }
