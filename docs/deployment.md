@@ -65,26 +65,44 @@ Release** (notes générées) sont posés en fin de pipeline, après la vérific
 - Hook local `~/.claude/hooks/guard-main-push.sh` : tout `git push` vers `main` exige une
   confirmation explicite (pousser `main` = déployer).
 
+## Topologie réseau
+
+Le VPS n'expose rien directement au web public :
+
+- **Apps publiques (prod)** : exposées par le **tunnel Cloudflare** — on ajoute une route
+  *Public Hostname* dans Zero Trust → Tunnels, c'est elle qui crée l'entrée DNS proxyfiée
+  et Cloudflare termine le TLS.
+- **Apps privées (preprod, Dokploy, outils)** : enregistrement A manuel (DNS only) vers
+  l'**IP Tailscale** du VPS — joignables uniquement depuis le tailnet. Les certificats
+  Let's Encrypt sont émis par Traefik via le **challenge DNS** (API Cloudflare), donc pas
+  besoin d'être joignable publiquement.
+- **Runners GitHub** : Dokploy (webhooks) et la preprod étant sur le tailnet, les jobs de
+  deploy rejoignent le tailnet en **node éphémère** (`tailscale/github-action`, `tag:ci`,
+  client OAuth Tailscale → secrets `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET`).
+
 ## Mise en place Dokploy (runbook)
 
 À faire une fois par projet (les deux apps sont identiques, seuls le tag d'image, le
 domaine et le webhook changent) :
 
-1. Le package ghcr doit être **public** (page du package → Package settings → Danger Zone →
-   Change visibility → Public). Sinon, renseigner un PAT `read:packages` dans Dokploy.
-2. Dans Dokploy : **Create Service → Application**, nommer (`solarsys` / `solarsys-preprod`).
-3. Provider **Docker** → image `ghcr.io/t3hx/solarsys-react-app:latest` (prod) ou `:preprod`
-   (preprod). Pas de credentials (package public).
-4. Onglet **Advanced** → Container Port : `8080`. Healthcheck sur `/` si le formulaire
-   existe dans la version de Dokploy.
-5. Onglet **Domains** → host (`solarsys.<domaine>` / `preprod.solarsys.<domaine>`),
-   port `8080`, HTTPS avec certificat **Let's Encrypt**. Le DNS (enregistrement A vers le
-   VPS) doit exister au préalable.
+1. Le package ghcr est **public** d'office (il hérite de la visibilité du repo — vérifier
+   sur la page du package si le repo est privé, sinon PAT `read:packages` dans Dokploy).
+2. Dans Dokploy : projet (`solarsys`) → **deux environnements** (`production`, `preprod`) →
+   dans chacun, **Create Service → Application** (`solarsys` / `solarsys-preprod`).
+3. Provider **Docker** → image **complète, registre inclus** :
+   `ghcr.io/t3hx/solarsys-react-app:latest` (prod) ou `:preprod` (preprod). Pas de
+   credentials (package public).
+4. DNS selon la topologie ci-dessus : route tunnel Cloudflare (prod) / enregistrement A
+   vers l'IP Tailscale (preprod).
+5. Onglet **Domains** → host (`solarsys.nspace.link` / `sol-pprod.nspace.link`), path `/`,
+   **container port `8080`**, HTTPS, Cert `letsencrypt`.
 6. Onglet **Deployments** → copier la **Webhook URL** et la poser en secret GitHub :
    `gh secret set DOKPLOY_PROD_WEBHOOK_URL` (ou `DOKPLOY_PREPROD_WEBHOOK_URL`).
-7. Poser les variables d'URL publiques pour la vérification :
-   `gh variable set PROD_URL --body "https://solarsys.<domaine>"` (et `PREPROD_URL`).
-8. Premier déploiement : bouton **Deploy** dans Dokploy (ensuite le webhook prend le relais).
+7. Poser les variables d'URL pour la vérification :
+   `gh variable set PROD_URL --body "https://solarsys.nspace.link"` (et `PREPROD_URL`).
+8. Une fois par tailnet : tag `tag:ci` dans les ACLs Tailscale + client OAuth (scope
+   Auth Keys Write, tag `tag:ci`) → secrets `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET`.
+9. Premier déploiement : bouton **Deploy** dans Dokploy (ensuite le webhook prend le relais).
 
 ## Dépannage
 
