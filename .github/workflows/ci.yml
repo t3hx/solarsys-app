@@ -96,6 +96,14 @@ jobs:
     needs: docker-preprod
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     steps:
+      # ~ Dokploy et la preprod ne sont joignables que sur le tailnet : le runner
+      # ~ le rejoint en node ephemere le temps du job
+      - name: Join the tailnet
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
       - name: Trigger Dokploy redeploy
         id: hook
         env:
@@ -201,6 +209,14 @@ jobs:
     needs: [version, docker-prod]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
+      # ~ Le webhook Dokploy n'est joignable que sur le tailnet (la verification
+      # ~ de PROD_URL, elle, passe par Cloudflare public)
+      - name: Join the tailnet
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
       - name: Trigger Dokploy redeploy
         env:
           WEBHOOK_URL: ${{ secrets.DOKPLOY_PROD_WEBHOOK_URL }}
