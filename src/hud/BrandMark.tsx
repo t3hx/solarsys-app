@@ -18,9 +18,11 @@ export interface BrandMarkProps {
   seBox: Box
 }
 
-// ~ Cercle inscrit du triangle libre (ligne deco → angle du coin), unites viewBox SE
+// ~ Cercle inscrit du triangle libre (ligne deco → angle du coin), unites viewBox SE.
+// ~ Le logo est le carre inscrit dans ce cercle (cote = 2r/√2) : il ne peut par
+// ~ construction toucher ni la ligne decorative ni le crochet du coin.
 const INSCRIBED_RADIUS = 28.7
-const LOGO_SIZE = 52
+const LOGO_SIZE = Math.round((2 * INSCRIBED_RADIUS) / Math.SQRT2)
 
 export function BrandMark({ margin, seBox }: BrandMarkProps) {
   const phase = useAppStore((state) => state.phase)
