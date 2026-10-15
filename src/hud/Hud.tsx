@@ -16,6 +16,7 @@ import { LangSwitcher } from '@/hud/controls/LangSwitcher'
 import { TimeScaleControl } from '@/hud/controls/TimeScaleControl'
 import { DrawerMenu } from '@/hud/drawer/DrawerMenu'
 import { FocusUi } from '@/hud/focus/FocusUi'
+import { TacticalLabelsOverlay } from '@/hud/tactical/TacticalLabelsOverlay'
 import styles from '@/hud/Hud.module.css'
 import { hudLayout, hudScale, uiScale } from '@/hud/hudLayout'
 import { useWindowSize } from '@/hud/useWindowSize'
@@ -91,6 +92,8 @@ export function Hud({ system }: { system: SolarSystem }) {
       </div>
 
       <FocusUi scale={controlsScale} />
+
+      <TacticalLabelsOverlay system={system} />
 
       <DrawerMenu
         key={drawerOpen ? 'open' : 'closed'}

@@ -1,0 +1,55 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  /* ~ Sous le cadre HUD (z 10) mais au-dessus du canvas */
+  pointer-events: none;
+  user-select: none;
+  animation: fadeIn 0.35s ease;
+  font-family: system-ui, sans-serif;
+}
+
+/* ~ Tige : part de l'ancre de la boite, longueur et angle poses par frame en inline */
+.leader {
+  position: absolute;
+  height: 1.5px;
+  transform-origin: left center;
+  opacity: 0.85;
+}
+
+/* ~ Boite : taille et texte proportionnels a la fenetre (clamp vw/vh) */
+.box {
+  position: absolute;
+  padding: 0.4em 0.9em;
+  border: 2px solid;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: clamp(13px, 0.55vw + 0.9vh, 26px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+/* ~ Colonne gauche : la boite s'etend a gauche de son ancre */
+.boxLeft {
+  transform: translate(-100%, -50%);
+}
+
+.boxRight {
+  transform: translate(0, -50%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    animation: none;
+  }
+}
