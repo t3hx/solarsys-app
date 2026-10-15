@@ -8,9 +8,10 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { BufferGeometry, Float32BufferAttribute, Line, LineBasicMaterial } from 'three'
 import { colors } from '@/config/colors'
-import { orbitLineDefaults, outlineConfig } from '@/config/rendering'
+import { orbitLineDefaults } from '@/config/rendering'
 import { outlineTarget } from '@/scene/effects/outlineTarget'
 import { useBodyPointerHandlers } from '@/scene/interaction/useBodyPointerHandlers'
+import { orbitAppearance } from '@/scene/orbits/orbitAppearance'
 import { ellipsePoints } from '@/scene/orbits/orbitGeometry'
 import { useInteractionStore } from '@/store/interaction'
 
@@ -60,27 +61,20 @@ export function OrbitLine({
     [line],
   )
 
-  // ~ Surbrillance quand le corps de cette orbite est survole ou selectionne
-  const highlight = useInteractionStore(
+  // ~ Surbrillance survol/selection prioritaire, couleur du corps en vue tactique
+  const appearance = useInteractionStore(
     useShallow((state) => {
       const target = outlineTarget(state)
-      return target?.id === bodyId ? target.kind : null
+      return orbitAppearance(bodyId, target?.id === bodyId ? target.kind : null, state.isTactical)
     }),
   )
   const lineRef = useRef<Line>(null)
   useEffect(() => {
     const material = lineRef.current?.material as LineBasicMaterial | undefined
     if (!material) return
-    if (highlight === null) {
-      material.color.set(colors.white)
-      material.opacity = orbitLineDefaults.opacity
-    } else {
-      material.color.set(
-        highlight === 'selected' ? outlineConfig.selectedColor : outlineConfig.hoverColor,
-      )
-      material.opacity = orbitLineDefaults.highlightOpacity
-    }
-  }, [highlight])
+    material.color.set(appearance.color)
+    material.opacity = appearance.opacity
+  }, [appearance])
 
   const pointerHandlers = useBodyPointerHandlers(bodyId)
 

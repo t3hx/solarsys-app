@@ -67,6 +67,8 @@ export const orbitLineDefaults = {
   opacity: 0.2,
   /** Opacite de la ligne du corps survole ou selectionne */
   highlightOpacity: 0.8,
+  /** Opacite des lignes colorees de la vue tactique */
+  tacticalOpacity: 0.65,
   /** Bornes du nombre de segments de l'ellipse (choisi par `orbitLineResolution`) */
   minResolution: 256,
   maxResolution: 4096,
