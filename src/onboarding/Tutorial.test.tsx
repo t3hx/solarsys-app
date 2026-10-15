@@ -40,6 +40,26 @@ describe('Tutorial', () => {
     expect(localStorage.getItem(TUTORIAL_STORAGE_KEY)).toBe('1')
   })
 
+  it('shows the title logo above the card', () => {
+    render(<Tutorial onComplete={() => undefined} />)
+    const logo = screen.getByRole('img', { name: /solarsys/i })
+    expect(logo).toHaveAttribute('src', '/solarsys-logo-title.png')
+  })
+
+  it('slides horizontally between steps while the card stays in place', () => {
+    render(<Tutorial onComplete={() => undefined} />)
+    const track = screen.getByTestId('tutorial-track')
+    expect(track.style.transform).toBe('translateX(-0%)')
+    fireEvent.click(screen.getByRole('button', { name: /next/i }))
+    expect(track.style.transform).toBe('translateX(-100%)')
+    // * Toutes les etapes sont dans le rail, seule la courante est exposee
+    expect(track.children).toHaveLength(9)
+    // * La carte n'est plus repositionnee selon le spotlight : aucun style de placement
+    const dialog = screen.getByRole('dialog')
+    expect(dialog.style.alignSelf).toBe('')
+    expect(dialog.style.marginTop).toBe('')
+  })
+
   it('spotlights the HUD element targeted by the current step', () => {
     render(
       <>
