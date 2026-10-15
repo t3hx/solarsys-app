@@ -1,0 +1,41 @@
+.indicator {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  font-family: system-ui, sans-serif;
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
+
+.slowBlink {
+  animation: slowBlink 2s infinite ease-in-out;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes slowBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blink,
+  .slowBlink {
+    animation: none;
+  }
+}

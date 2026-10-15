@@ -1,0 +1,146 @@
+.corner {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-hud);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.button {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ~ Pas d'anneau de focus navigateur apres un clic ; anneau HUD au clavier */
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-hud);
+  outline-offset: 2px;
+}
+
+/* ~ Coin NW : bouton MENU */
+.menuBackground {
+  fill: transparent;
+  transition: fill 0.2s ease;
+}
+
+.menuText {
+  fill: var(--color-hud);
+  stroke: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  text-anchor: middle;
+  user-select: none;
+  transition: fill 0.1s ease;
+}
+
+.menuButton:hover .menuBackground,
+.menuButton:focus-visible .menuBackground {
+  fill: var(--color-hud);
+}
+
+.menuButton:hover .menuText,
+.menuButton:focus-visible .menuText {
+  fill: black;
+}
+
+/* ~ Coin SW : nom de la cible */
+.targetText {
+  fill: var(--color-hud);
+  stroke: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  user-select: none;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ~ Coin SE : bouton vue tactique */
+.triangle {
+  fill: var(--color-hud);
+  stroke: var(--color-hud);
+  stroke-width: 0.5;
+  fill-opacity: 0.8;
+  stroke-opacity: 0.8;
+  transition: all 0.2s ease-out;
+}
+
+.tacticalButton[aria-pressed='true'] .triangle {
+  fill-opacity: 1;
+  stroke-opacity: 1;
+}
+
+.tacticalButton:hover .triangle,
+.tacticalButton:focus-visible .triangle {
+  fill-opacity: 0.95;
+  filter: drop-shadow(0 0 6px var(--color-hud));
+}
+
+/* ~ Libelle droit au-dessus du cote horizontal du triangle */
+.tacticalLabel {
+  fill: var(--color-hud);
+  stroke: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* ~ Icones : positions et tailles en unites du viewBox, mises a l'echelle par transform */
+.iconWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 130px;
+  height: 124px;
+  pointer-events: none;
+  transform-origin: top left;
+}
+
+.iconContainer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* ~ Remplissage blanc, contour noir (ombre portee dans les quatre directions) */
+  color: white;
+  filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black)
+    drop-shadow(0 -1px 0 black);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .targetText {
+    animation: none;
+  }
+}

@@ -8,9 +8,9 @@ Date : 2026-09-05, mis à jour le 2026-09-07 avec les décisions ci-dessous. Ce 
 |-------|----------|
 | Dépôts | Le dépôt Vue est renommé **`t3hx/solarsys-app-vue`** (gelé, aucun correctif B1–B13). Le nouveau dépôt **`t3hx/solarsys-app`** est créé, vide. Le `origin` du clone local Vue a été repointé vers `solarsys-app-vue`. |
 | Nom du produit | **`solarsys`** remplace « Celestial Walker » partout : titre de page, préloader, drawer, cartouche, fenêtre À propos, textes du tutoriel, cookie (`solarsys_tutorial_seen`). |
-| Image Docker | **`ghcr.io/t3hx/solarsys-app`**, taguée `latest` sur `main` + sha. |
+| Image Docker | **`ghcr.io/t3hx/solarsys-react-app`**, taguée `latest` sur `main` + sha. |
 | Production | L'app n'a jamais été déployée : la phase 9 inclut la création de l'application Dokploy, le domaine, les identifiants ghcr et le premier déploiement. |
-| Caméra | `CameraControls` de drei (D3) validé, prototype de suivi en phase 4. |
+| Caméra | `CameraControls` de drei (D3) validé. Résultat du prototype (phase 4, 2026-09-07) : CameraControls pour les entrées utilisateur et le suivi (`moveTo` par frame) ; les transitions scriptées (focus 1,5 s, tactique 2 s, reset) restent des tweens GSAP `power3.inOut` appliqués via `setLookAt(…, false)`, car l'événement `rest` de camera-controls arrive plusieurs secondes après la fin visuelle. |
 | Ombres | **Supprimées** (pas de `castShadow`, pas d'option). |
 | Linear | Projet **Solarsys** existant (id `a6dd0f2f-…`), vide : EPIC#1 et FEAT#1–#9 créés à partir de ce plan. |
 
@@ -272,6 +272,22 @@ Branche `feat/windows-and-onboarding`.
 Critère : parité complète ; checklist §7 validée manuellement.
 
 ### Phase 8 — Performance et assets (2–3 j)
+
+> **Redéfinie le 2026-09-07** : chaque corps peut être zoomé jusqu'à sa surface, donc les textures sources gardent leur pleine résolution et aucune compression GPU (KTX2) n'est appliquée.
+>
+> **Revue le 2026-09-10** après test utilisateur : le chargement progressif (aperçus 2K au démarrage, pleine résolution chargée à la sélection) provoquait une attente visible au premier clic sur un corps. Décision : le préloader est là pour faire attendre, l'utilisation doit être fluide. Tout est donc chargé pendant le préloader, et `SceneReadyMarker` envoie toutes les textures au GPU (`renderer.initTexture`) avant de déclarer la scène prête. La phase conserve le filtrage anisotrope, la distance minimale de suivi au-dessus de la surface et l'API de mesure (`window.solarsys.stats()`).
+>
+> Mesures (Chromium, GPU Metal, serveur local) : scène prête en **≈ 5,3 s**, **0 requête réseau** après le préloader, 22 textures résidentes (**≈ 1,9 Go** estimés, comme la version Vue), première sélection sans chargement (pire frame 42–226 ms, moyenne 17–20 ms).
+>
+> **Fidélité physique (2026-09-10)**, à la demande de l'utilisateur (« le plus proche possible de la réalité ») :
+> - Convention de rotation IAU : période toujours positive, l'obliquité (0–180°) oriente le pôle et porte à elle seule le sens ; au-delà de 90° la rotation apparaît rétrograde. Les données comptaient le sens deux fois (obliquité > 90° **et** période négative pour Vénus, Uranus, Pluton), ce qui les faisait tourner dans le mauvais sens. `rotationDirection` n'est plus une donnée mais une valeur dérivée.
+> - Données corrigées : nœud ascendant de la Terre 0° → 174,873° (périhélie décalé de 175°), anomalie moyenne 358° → 357,517°, argument du périhélie de Neptune 276,336° → 273,187°.
+> - `src/data/reference.test.ts` compare les données livrées aux valeurs du NASA Planetary Fact Sheet et des éléments J2000 du JPL (obliquité, période de rotation, a, e, i, période, longitude du périhélie, anomalie moyenne) pour les huit planètes, Pluton et la Lune ; `SolarSystem.test` vérifie dans la scène l'angle pôle/normale orbitale et le sens de rotation. Les obliquités de Haumea (126°), Makemake (58°) et Éris (61,6°) ne figurent pas dans le fact sheet et restent non vérifiées.
+> - Éclairage : lumière solaire sans décroissance (`decay 0`, intensité 2,2) et ambiante 0,04 au lieu de décroissance 1,5 / ambiante 0,35 hérités de Vue, qui laissaient les planètes éclairées presque uniquement par l'ambiante (aucun terminateur sur les textures).
+> - Cadrage : distance de focus jamais inférieure à la distance minimale de suivi (la caméra était placée dans Cérès).
+> - Reste à faire pour aller plus loin : orientation azimutale des pôles (RA/Dec IAU des pôles nord, aujourd'hui le pôle est incliné dans une direction arbitraire du plan orbital), inclinaison de l'axe du Soleil (7,25°, aujourd'hui 0), obliquités des planètes naines à sourcer.
+>
+> Corrections livrées dans la même branche : ligne d'orbite à résolution adaptative (`orbitLineResolution`, écart maximal 4 % du rayon du corps ; à 512 segments fixes, Pluton, Haumea, Makemake et Éris étaient à plus d'un rayon de leur ligne une fois cadrés), clic de fin de glissement ignoré (`pointerConfig.clickMaxDistancePx`), re-sélection du corps suivi sans perte du suivi, et sélection depuis la vue tactique qui ne se fait plus annuler par la restauration de la vue.
 Branche `perf/textures-and-rendering`.
 - Script `scripts/convert-textures.mjs` (`toktx`/`basisu`) → KTX2 UASTC/ETC1S avec mipmaps ; résolutions : 2K par défaut, 4K Terre/Soleil, 8K Terre en LOD activé au-delà du niveau de zoom 8.
 - `useKTX2` (drei) + `KTX2Loader` transcoder dans `public/basis/`.
@@ -279,11 +295,19 @@ Branche `perf/textures-and-rendering`.
 - DPR plafonné, bloom sélectif, mesure avant/après (temps jusqu'au premier rendu, VRAM via `renderer.info`, FPS sur un MacBook et un mobile).
 Critère : premier rendu < 3 s sur connexion fibre (vs préchargement complet aujourd'hui), 60 fps stable sur Retina 1440p.
 
+### Phase 8 bis — Ergonomie du HUD (2026-09-10, branche `feat/hud-speeds-tactical-zoom`)
+
+Retours utilisateur après la phase 8 :
+- **Vitesses en unités humaines.** Trois presets, « 1 s = 1 heure / 1 jour / 1 an », à la place des multiplicateurs x0.01–x10 (1 s = 1 jour restait implicite). Chaque type de scène applique son défaut à l'entrée : focus → 1 heure (Terre en 24 s, Haumea en 3,9 s), univers → 1 jour (Mercure en 88 s), tactique → 1 an (troisième loi de Kepler lisible : Jupiter 12 s, Neptune 2,7 min). L'utilisateur garde la main entre deux changements de scène (`store/sceneSpeed`).
+- **Bouton vue tactique.** Coin SE agrandi (50 → 130 × 124 unités, soit 97 × 93 px sur un MacBook 14") avec le libellé « TACTIQUE » droit au-dessus du côté horizontal du triangle : il se lit comme une commande, plus comme un ornement du cadre.
+- **Reflet solaire.** Sur la machine de l'utilisateur (Chrome et Zen, GPU réel), le reflet du Soleil sur l'océan était un point blanc dense, comme sur un miroir, alors que les captures headless montraient un halo doux : la carte de rugosité générée par canvas 2D (8192 × 4096, 134 Mo) ne s'appliquait pas chez lui. Remplacée par une injection GLSL qui lit la carte spéculaire NASA directement comme `roughnessMap`, inversée, avec un plancher de rugosité de 60 % pour l'eau (`specularRoughnessShader`, injections composées par `shaderInjections` avec une clé de cache de programme par combinaison). Plus de canvas ni de conversion au démarrage. L'API de debug `window.solarsys` est désormais aussi disponible en `pnpm dev`.
+- **Jauge de zoom relative à la cible.** Les seuils absolus hérités de Vue mesuraient la zone orbitale, d'où « MAX » dès l'arrivée en focus. Niveau 10 = distance minimale atteignable (surface du corps suivi, ou du Soleil en vue libre, où la caméra ne peut plus entrer), niveau 0 = entrée de la sphère d'étoiles, échelle logarithmique. OUT OF RANGE dans la coquille d'étoiles (30 000–45 000 u), VOID au-delà : la distance maximale de la caméra passe à 60 000 u pour voir la sphère d'étoiles depuis le vide.
+
 ### Phase 9 — Mise en production (1–2 j)
 Branche `ci/deploy-and-docs`.
 - Playwright : chargement, clic planète, focus, ouverture info, changement de langue, vue tactique.
 - Docs : README (EN), `DEV_GUIDE.md` (FR) réécrit pour R3F, `CLAUDE.md`.
-- Première mise en production (l'app n'a jamais été déployée) : application Dokploy de type image Docker pointant sur `ghcr.io/t3hx/solarsys-app:latest`, identifiants ghcr (token lecture packages) saisis dans Dokploy, domaine + certificat, healthcheck sur `/`, webhook Dokploy appelé par le job `deploy` de la CI sur `main`. Aucun secret applicatif n'est nécessaire côté runtime (app statique) ; le webhook Dokploy est un secret GitHub Actions.
+- Première mise en production (l'app n'a jamais été déployée) : application Dokploy de type image Docker pointant sur `ghcr.io/t3hx/solarsys-react-app:latest`, identifiants ghcr (token lecture packages) saisis dans Dokploy, domaine + certificat, healthcheck sur `/`, webhook Dokploy appelé par le job `deploy` de la CI sur `main`. Aucun secret applicatif n'est nécessaire côté runtime (app statique) ; le webhook Dokploy est un secret GitHub Actions.
 - Archivage du dépôt `solarsys-app-vue` sur GitHub une fois la prod validée.
 
 ---

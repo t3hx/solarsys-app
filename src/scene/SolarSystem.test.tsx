@@ -1,0 +1,325 @@
+import type * as Drei from '@react-three/drei'
+import ReactThreeTestRenderer from '@react-three/test-renderer'
+import type { Line, Mesh, MeshStandardMaterial, Object3D, PointLight } from 'three'
+import { Vector3 } from 'three'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { orbitLineDefaults } from '@/config/rendering'
+import { orbitalPosition } from '@/physics/kepler'
+import { angularSpeedFromPeriodHours } from '@/physics/rotation'
+import { RegistryProvider, createRegistry } from '@/scene/registry'
+import { SimulationDriver } from '@/scene/simulation/SimulationDriver'
+import { SolarSystem } from '@/scene/SolarSystem'
+import { useDebugStore } from '@/store/debug'
+import { useInteractionStore } from '@/store/interaction'
+import { useSimulationStore } from '@/store/simulation'
+import { solarSystemFixture } from '@/test/fixtures/solarSystem'
+
+// * Les textures ne se chargent pas sous jsdom : useTexture renvoie une texture vide
+vi.mock('@react-three/drei', async (importOriginal) => {
+  const actual = await importOriginal<typeof Drei>()
+  const { fakeUseTexture: useTexture } = await import('@/test/mocks/useTexture')
+  return { ...actual, useTexture }
+})
+
+const system = solarSystemFixture
+
+function mount(registry = createRegistry()) {
+  return ReactThreeTestRenderer.create(
+    <RegistryProvider registry={registry}>
+      <SolarSystem system={system} />
+      <SimulationDriver />
+    </RegistryProvider>,
+  )
+}
+
+describe('SolarSystem', () => {
+  beforeEach(() => {
+    useSimulationStore.getState().reset()
+    useInteractionStore.getState().reset()
+    useDebugStore.getState().reset()
+  })
+
+  it('renders one mesh per body, named after the body', async () => {
+    const renderer = await mount()
+    const meshes = renderer.scene.findAll(
+      (node) => node.type === 'Mesh' && node.props.userData?.type === 'celestial-body',
+    )
+    expect(meshes).toHaveLength(15)
+    const names = meshes.map((m) => (m.instance as Object3D).name).sort()
+    expect(names).toContain('Earth')
+    expect(names).toContain('Moon')
+    expect(names).toContain('Sun')
+    await renderer.unmount()
+  })
+
+  it('builds the orbital plane → orbit → system hierarchy and nests satellites', async () => {
+    const renderer = await mount()
+    const earthPlane = renderer.scene.findByProps({ name: 'Earth Orbital Plane' })
+    const earthOrbit = earthPlane.findByProps({ name: 'Earth Orbit' })
+    const earthSystem = earthOrbit.findByProps({ name: 'Earth System' })
+    expect(earthSystem.findByProps({ name: 'Earth' })).toBeDefined()
+    expect(earthSystem.findByProps({ name: 'Moon Orbital Plane' })).toBeDefined()
+    await renderer.unmount()
+  })
+
+  it('draws one orbit line per orbiting body', async () => {
+    const renderer = await mount()
+    const lines = renderer.scene.findAll((node) => node.instance.userData?.type === 'orbit-line')
+    expect(lines).toHaveLength(14)
+    await renderer.unmount()
+  })
+
+  it('registers every body and every orbit', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    expect([...registry.bodies()]).toHaveLength(15)
+    expect([...registry.orbits()]).toHaveLength(14)
+    expect(registry.getBody('venus')?.rotationSpeed).toBeGreaterThan(0)
+    await renderer.unmount()
+    expect([...registry.bodies()]).toHaveLength(0)
+  })
+
+  it('moves each system along its Kepler orbit as simulated time advances', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    useSimulationStore.getState().setSpeed(10)
+    const frames = 6
+    const delta = 0.5
+    await renderer.advanceFrames(frames, delta)
+
+    const earth = registry.getOrbit('earth')!
+    const expected = orbitalPosition(earth.orbit, frames * delta * 10)
+    expect(earth.mover.position.x).toBeCloseTo(expected.x, 4)
+    expect(earth.mover.position.z).toBeCloseTo(expected.z, 4)
+    await renderer.unmount()
+  })
+
+  it('spins every body counter-clockwise around its own pole, at its rotation speed', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    await renderer.advanceFrames(4, 0.25)
+    for (const id of ['earth', 'venus', 'uranus']) {
+      const body = system.byId.get(id)!
+      const expected = angularSpeedFromPeriodHours(body.rotationPeriodHours) * 1
+      expect(registry.getBody(id)!.mesh.rotation.y, id).toBeCloseTo(expected, 6)
+      expect(registry.getBody(id)!.mesh.rotation.y, id).toBeGreaterThan(0)
+    }
+    await renderer.unmount()
+  })
+
+  it('tilts each pole by the axial tilt from its orbit normal, so an obliquity above 90° reads as retrograde', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    const poleOf = (id: string) => {
+      const { mesh } = registry.getBody(id)!
+      mesh.updateWorldMatrix(true, false)
+      const origin = mesh.getWorldPosition(new Vector3())
+      return mesh
+        .localToWorld(new Vector3(0, 1, 0))
+        .sub(origin)
+        .normalize()
+    }
+    const orbitNormalOf = (id: string) => {
+      const orbitGroup = registry.getBody(id)!.mesh.parent!.parent!
+      return orbitGroup
+        .localToWorld(new Vector3(0, 1, 0))
+        .sub(orbitGroup.getWorldPosition(new Vector3()))
+        .normalize()
+    }
+    for (const id of ['earth', 'venus', 'uranus', 'pluto']) {
+      const tilt = system.byId.get(id)!.axialTilt
+      expect(poleOf(id).angleTo(orbitNormalOf(id)), id).toBeCloseTo(tilt, 5)
+    }
+    // * Venus (177°) et Pluton (122°) : pole sous le plan orbital → rotation retrograde vue du nord
+    expect(poleOf('venus').dot(orbitNormalOf('venus'))).toBeLessThan(0)
+    expect(poleOf('pluto').dot(orbitNormalOf('pluto'))).toBeLessThan(0)
+    expect(poleOf('earth').dot(orbitNormalOf('earth'))).toBeGreaterThan(0)
+    await renderer.unmount()
+  })
+
+  it('freezes everything while paused', async () => {
+    const registry = createRegistry()
+    const renderer = await mount(registry)
+    useSimulationStore.getState().togglePaused()
+    await renderer.advanceFrames(5, 1)
+    const mars = registry.getOrbit('mars')!
+    const initial = orbitalPosition(mars.orbit, 0)
+    expect(mars.mover.position.x).toBeCloseTo(initial.x, 4)
+    expect(registry.getBody('mars')!.mesh.rotation.y).toBe(0)
+    await renderer.unmount()
+  })
+
+  it('hovers and selects a body from pointer events', async () => {
+    const renderer = await mount()
+    const earth = renderer.scene.findByProps({ name: 'Earth' })
+    await renderer.fireEvent(earth, 'pointerOver')
+    expect(useInteractionStore.getState().hoveredId).toBe('earth')
+    await renderer.fireEvent(earth, 'pointerOut')
+    expect(useInteractionStore.getState().hoveredId).toBeNull()
+    await renderer.fireEvent(earth, 'click')
+    expect(useInteractionStore.getState().selectedId).toBe('earth')
+    await renderer.unmount()
+  })
+
+  it('selects a body from a click on its orbit line', async () => {
+    const renderer = await mount()
+    const line = renderer.scene.find((node) => node.instance.userData?.bodyId === 'mars')
+    await renderer.fireEvent(line, 'click')
+    expect(useInteractionStore.getState().selectedId).toBe('mars')
+    await renderer.unmount()
+  })
+
+  describe('visual features', () => {
+    const meshOf = async (name: string) => {
+      const renderer = await mount()
+      const node = renderer.scene.findByProps({ name })
+      return { renderer, mesh: node.instance as Mesh, node }
+    }
+
+    it('shares one unit sphere geometry between bodies and scales them by radius and oblateness', async () => {
+      const renderer = await mount()
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const mars = renderer.scene.findByProps({ name: 'Mars' }).instance as Mesh
+      expect(earth.geometry).toBe(mars.geometry)
+      const radius = earth.scale.x
+      expect(radius).toBeCloseTo(1.367, 3)
+      expect(earth.scale.y).toBeCloseTo(radius * (1 - 0.00335), 6)
+      expect(earth.scale.z).toBeCloseTo(radius, 6)
+      await renderer.unmount()
+    })
+
+    it('gives Earth night lights, a day/night shader and a cloud layer', async () => {
+      const { renderer, mesh, node } = await meshOf('Earth')
+      const material = mesh.material as MeshStandardMaterial
+      expect(material.emissiveMap).toBeTruthy()
+      expect(material.normalMap).toBeTruthy()
+      expect(material.onBeforeCompile).not.toBe(Object.getPrototypeOf(material).onBeforeCompile)
+      expect(node.findByProps({ name: 'EarthClouds' })).toBeDefined()
+      expect(() => node.findByProps({ name: 'EarthAtmosphere' })).toThrow()
+      await renderer.unmount()
+    })
+
+    it('uses the specular map itself as roughness map, read inverted by the shader', async () => {
+      const renderer = await mount()
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const material = earth.material as MeshStandardMaterial
+      expect(material.roughnessMap?.userData.url).toBe('/textures/8k_earth_specular_map.png')
+      expect(material.customProgramCacheKey()).toContain('specularRoughness')
+      expect(material.customProgramCacheKey()).toContain('dayNight')
+      const mercury = renderer.scene.findByProps({ name: 'Mercury' }).instance as Mesh
+      expect((mercury.material as MeshStandardMaterial).roughnessMap).toBeNull()
+      await renderer.unmount()
+    })
+
+    it('gives Venus an atmosphere layer and nothing else', async () => {
+      const { renderer, node } = await meshOf('Venus')
+      expect(node.findByProps({ name: 'VenusAtmosphere' })).toBeDefined()
+      expect(() => node.findByProps({ name: 'VenusClouds' })).toThrow()
+      await renderer.unmount()
+    })
+
+    it('gives Saturn textured rings and Uranus flat-color rings', async () => {
+      const { renderer, node } = await meshOf('Saturn')
+      const saturnRings = node.findByProps({ name: 'SaturnRings' }).instance as Mesh
+      expect((saturnRings.material as MeshStandardMaterial).map).toBeTruthy()
+      const uranusRings = renderer.scene.findByProps({ name: 'UranusRings' }).instance as Mesh
+      expect((uranusRings.material as MeshStandardMaterial).map).toBeNull()
+      await renderer.unmount()
+    })
+
+    it('gives Pluto a bump map and Mercury nothing', async () => {
+      const { renderer, mesh } = await meshOf('Pluto')
+      expect((mesh.material as MeshStandardMaterial).bumpMap).toBeTruthy()
+      const mercury = renderer.scene.findByProps({ name: 'Mercury' })
+      expect((mercury.instance as Mesh).children).toHaveLength(0)
+      const mercuryMaterial = (mercury.instance as Mesh).material as MeshStandardMaterial
+      expect(mercuryMaterial.emissiveMap).toBeNull()
+      await renderer.unmount()
+    })
+  })
+
+  describe('debug helpers', () => {
+    const act = (fn: () => void) => ReactThreeTestRenderer.act(async () => fn())
+
+    it('shows no helper by default', async () => {
+      const renderer = await mount()
+      expect(renderer.scene.findAllByType('AxesHelper')).toHaveLength(0)
+      expect(renderer.scene.findAllByType('GridHelper')).toHaveLength(0)
+      await renderer.unmount()
+    })
+
+    it('applies wireframe to the body and its layers', async () => {
+      const renderer = await mount()
+      await act(() => useDebugStore.getState().toggleWireframe('earth'))
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const clouds = renderer.scene.findByProps({ name: 'EarthClouds' }).instance as Mesh
+      expect((earth.material as MeshStandardMaterial).wireframe).toBe(true)
+      expect((clouds.material as MeshStandardMaterial).wireframe).toBe(true)
+      const mars = renderer.scene.findByProps({ name: 'Mars' }).instance as Mesh
+      expect((mars.material as MeshStandardMaterial).wireframe).toBe(false)
+      await renderer.unmount()
+    })
+
+    it('adds axes and grid helpers to a body on demand, with depth test disabled', async () => {
+      const renderer = await mount()
+      await act(() => {
+        useDebugStore.getState().toggleBodyAxes('earth')
+        useDebugStore.getState().toggleBodyGrid('earth')
+      })
+      const earth = renderer.scene.findByProps({ name: 'Earth' })
+      expect(earth.findAllByType('AxesHelper')).toHaveLength(1)
+      const grid = earth.findByType('GridHelper').instance as Mesh
+      expect((grid.material as MeshStandardMaterial).depthTest).toBe(false)
+      await renderer.unmount()
+    })
+
+    it('adds orbit helpers inside the inclined orbit group, not the body', async () => {
+      const renderer = await mount()
+      await act(() => useDebugStore.getState().toggleOrbitGrid('mars'))
+      const orbit = renderer.scene.findByProps({ name: 'Mars Orbit' })
+      expect(orbit.findAllByType('GridHelper')).toHaveLength(1)
+      expect(renderer.scene.findByProps({ name: 'Mars' }).findAllByType('GridHelper')).toHaveLength(
+        0,
+      )
+      await renderer.unmount()
+    })
+  })
+
+  describe('textures', () => {
+    it('loads the full-resolution textures of every body up front', async () => {
+      const renderer = await mount()
+      const earth = renderer.scene.findByProps({ name: 'Earth' }).instance as Mesh
+      const material = earth.material as MeshStandardMaterial
+      expect(material.map?.userData.url).toBe('/textures/8k_earth_daymap.jpg')
+      const neptune = renderer.scene.findByProps({ name: 'Neptune' }).instance as Mesh
+      expect((neptune.material as MeshStandardMaterial).map?.userData.url).toBe(
+        '/textures/2k_neptune.jpg',
+      )
+      await renderer.unmount()
+    })
+  })
+
+  describe('sunlight', () => {
+    it('lights every body with the same strength whatever its distance (no decay)', async () => {
+      const renderer = await mount()
+      const light = renderer.scene.find((node) => node.instance.type === 'PointLight')
+        .instance as unknown as PointLight
+      expect(light.decay).toBe(0)
+      expect(light.distance).toBe(0)
+      await renderer.unmount()
+    })
+  })
+
+  describe('orbit lines', () => {
+    it('draws distant orbits with more segments than near ones', async () => {
+      const renderer = await mount()
+      const segmentsOf = (bodyId: string) => {
+        const line = renderer.scene.find((node) => node.instance.userData?.bodyId === bodyId)
+        return (line.instance as unknown as Line).geometry.getAttribute('position').count - 1
+      }
+      expect(segmentsOf('earth')).toBeGreaterThanOrEqual(orbitLineDefaults.minResolution)
+      expect(segmentsOf('pluto')).toBeGreaterThan(segmentsOf('earth'))
+      await renderer.unmount()
+    })
+  })
+})

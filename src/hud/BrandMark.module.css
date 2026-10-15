@@ -1,0 +1,6 @@
+.brandMark {
+  position: fixed;
+  z-index: 900;
+  pointer-events: none;
+  user-select: none;
+}
