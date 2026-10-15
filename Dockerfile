@@ -14,6 +14,10 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY . .
 RUN pnpm build
 
+# ~ Preuve de version : la CI compare /version.json au tag attendu apres deploiement
+ARG APP_VERSION=dev
+RUN printf '{"version":"%s"}\n' "$APP_VERSION" > dist/version.json
+
 # ~ Etape 2 : image finale minimale, nginx sans privileges (utilisateur non-root, port 8080)
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
 

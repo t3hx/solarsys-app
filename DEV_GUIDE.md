@@ -90,7 +90,9 @@ Sous-ensemble Iconify embarqué (hors ligne) : ajouter le nom de l'icône dans
   [`docs/deployment.md`](docs/deployment.md) :
   - push `dev` → CI (quality + e2e) → image `ghcr.io/t3hx/solarsys-app:preprod` → webhook →
     app Dokploy **preprod** ;
-  - merge `dev → main` → CI → tag semver auto `vX.Y.Z` (Conventional Commits) + GitHub
-    Release → image `:latest` + `:vX.Y.Z` → webhook → app Dokploy **prod**.
+  - merge `dev → main` → CI → version calculée (première release : `v1.0.0`) → image
+    `:latest` + `:vX.Y.Z` → webhook → app Dokploy **prod** → vérification que la prod sert
+    bien la version (`/version.json`) → tag git + GitHub Release **seulement après cette
+    preuve**.
     L'image d'exécution est `nginxinc/nginx-unprivileged` et sert `dist/` statique sur le
     port 8080 (non-root), sans aucun secret applicatif.
